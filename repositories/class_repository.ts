@@ -1,12 +1,13 @@
 import { ClassModel } from "@/models/class_model";
 import { LearningRepository } from "./learning_repository";
+import { ClassRequestModel } from "@/models/class_request_model";
 
 export abstract class ClassRepository extends LearningRepository {
     public abstract getClasses(name?: string, categories?: string): Promise<ClassModel[]>;
     public abstract getClassById(id: string): Promise<ClassModel>;
-    public abstract createClass(data: any): Promise<any>;
-    public abstract updateClass(id: string, data: any): Promise<any>;
-    public abstract deleteClass(id: string): Promise<any>;
+    public abstract createClass(data: ClassRequestModel): Promise<ClassModel>;
+    public abstract updateClass(id: string, data: ClassRequestModel): Promise<ClassModel>;
+    public abstract deleteClass(id: string): Promise<void>;
     public abstract getLearningClasses(): Promise<any>;
     public abstract registerClass(id: string): Promise<any>;
     public abstract unregisterClass(id: string): Promise<any>;
@@ -24,18 +25,21 @@ class ClassRepositoryImpl extends ClassRepository {
     }
 
     public async getClassById(id: string): Promise<ClassModel> {
-        return this.instance.get(`/clazz/${id}`).then(res => res.data);
+        const response = this.instance.get(`/clazz/${id}`);
+        return response.then(res => res.data);
     }
 
-    public async createClass(data: any): Promise<any> {
-        return this.instance.post('/clazz', data);
+    public async createClass(data: ClassRequestModel): Promise<ClassModel> {
+        const response = this.instance.post('/clazz', data);
+        return response.then(res => res.data);
     }
 
-    public async updateClass(id: string, data: any): Promise<any> {
-        return this.instance.put(`/clazz/${id}`, data);
+    public async updateClass(id: string, data: ClassRequestModel): Promise<ClassModel> {
+        const response = this.instance.put(`/clazz/${id}`, data);
+        return response.then(res => res.data);
     }
 
-    public async deleteClass(id: string): Promise<any> {
+    public async deleteClass(id: string): Promise<void> {
         return this.instance.delete(`/clazz/${id}`);
     }
 

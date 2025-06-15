@@ -16,11 +16,11 @@ class ChapterRepositoryImpl extends ChapterRepository {
     }
 
     public async createChapter(data: any): Promise<any> {
-        return this.instance.post('/chapter', data);
+        return this.instance.post('/chapter', data).then(res => res.data);
     }
 
     public async updateChapter(id: string, data: any): Promise<any> {
-        return this.instance.put(`/chapter/${id}`, data);
+        return this.instance.put(`/chapter/${id}`, data).then(res => res.data);
     }
 
     public async deleteChapter(id: string): Promise<any> {

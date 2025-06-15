@@ -1,5 +1,4 @@
 import { ClassModel } from "@/models/class_model";
-import { chapterRepository, ChapterRepository } from "@/repositories/chapter_repository";
 import { classRepository, ClassRepository } from "@/repositories/class_repository";
 
 class ClassViewService {
