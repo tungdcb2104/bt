@@ -26,29 +26,37 @@ export default function ManageChaptersPage({
   const [chapters, setChapters] = useState<ChapterModel[]>([]);
   const [classInfo, setClassInfo] = useState<ClassModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedChapter, setSelectedChapter] = useState<ChapterModel | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<ChapterModel | null>(
+    null
+  );
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [newChapterName, setNewChapterName] = useState("");
   const [newChapterDescription, setNewChapterDescription] = useState("");
   const [newChapterClazzId, setNewChapterClazzId] = useState("");
   const [newChapterImage, setNewChapterImage] = useState<File | null>(null);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [allClasses, setAllClasses] = useState<{ id: number; title: string }[]>(
+    []
+  );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { classId } = use(params);
 
   useEffect(() => {
-    async function fetchChapters() {
+    async function fetchData() {
       try {
         const classInfo = await chapterManagementService.getClassData(classId);
         setClassInfo(classInfo);
         setChapters(classInfo.listChapter || []);
+
+        const classes = await chapterManagementService.getAllClassIdAndName();
+        setAllClasses(classes);
       } catch (error) {
-        console.error("Failed to fetch chapters:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchChapters();
+    fetchData();
   }, [classId]);
 
   const handleCreate = async () => {
@@ -70,7 +78,8 @@ export default function ManageChaptersPage({
     if (!selectedChapter) return;
     try {
       const updatedChapter = await chapterManagementService.updateChapter(
-        selectedChapter.id.toString(), {
+        selectedChapter.id.toString(),
+        {
           title: newChapterName,
           description: newChapterDescription,
           clazzId: parseInt(newChapterClazzId, 10),
@@ -150,14 +159,21 @@ export default function ManageChaptersPage({
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="clazzId" className="text-right">
-            Class ID
+            Class
           </Label>
-          <Input
+          <select
             id="clazzId"
             value={newChapterClazzId}
             onChange={(e) => setNewChapterClazzId(e.target.value)}
-            className="col-span-3"
-          />
+            className="col-span-3 border rounded px-3 py-2"
+          >
+            <option value="">-- Select Class --</option>
+            {allClasses.map((clazz) => (
+              <option key={clazz.id} value={clazz.id}>
+                {clazz.title}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="grid grid-cols-4 items-start gap-4">
           <Label htmlFor="image" className="text-right mt-2">
@@ -219,15 +235,15 @@ export default function ManageChaptersPage({
   return (
     <div className="container mx-auto p-4">
       <div className="flex items-center mb-4 gap-2">
-        <Link href="/management"><ChevronLeft className="w-4 h-4"/></Link>
+        <Link href="/management">
+          <ChevronLeft className="w-4 h-4" />
+        </Link>
         <h1 className="text-2xl font-bold">Manage Chapters</h1>
       </div>
       <p className="text-lg mb-4">
         Class: <span className="font-semibold">{classInfo?.title}</span>
       </p>
-      <p className="text-sm text-gray-500 mb-4">
-        {classInfo?.description}
-      </p>
+      <p className="text-sm text-gray-500 mb-4">{classInfo?.description}</p>
 
       <Dialog open={isCreateModalOpen} onOpenChange={setCreateModalOpen}>
         <DialogTrigger asChild>
@@ -245,34 +261,60 @@ export default function ManageChaptersPage({
       </Dialog>
 
       <div className="mt-4">
-        {chapters.sort((a, b) => a.id - b.id).map((chapter) => (
-          <Link href={`/management/${classId}/${chapter.id}`} key={chapter.id}>
-            <div
-              key={chapter.id}
-              className="flex items-center justify-between p-2 border-b hover:bg-gray-50 focus-within:bg-gray-100"
-            >
-              <div>
-                <h2 className="font-semibold hover:underline">{chapter.title}</h2>
-                <p className="text-sm text-gray-500">{chapter.description}</p>
-                <p className="text-xs text-gray-400">Class ID: {chapter.clazzId}</p>
+        {chapters
+          .sort((a, b) => a.id - b.id)
+          .map((chapter) => (
+            <div key={chapter.id}>
+              <div
+                key={chapter.id}
+                className="flex items-center justify-between p-2 border-b hover:bg-gray-50 focus-within:bg-gray-100"
+              >
+                <div className="w-16 h-16 mr-4 flex items-center justify-center">
+                  {chapter.image instanceof File ? (
+                    <img
+                      src={URL.createObjectURL(chapter.image as File)}
+                      alt={chapter.title}
+                      className="object-cover rounded w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="bg-gray-200 rounded w-full h-full flex items-center justify-center">
+                      <span className="text-gray-500 text-xs text-center">
+                        No Image
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <Link
+                  href={`/management/${classId}/${chapter.id}`}
+                  className="flex-1"
+                >
+                  <h2 className="font-semibold hover:underline">
+                    {chapter.title}
+                  </h2>
+                  <p className="text-sm text-gray-500">{chapter.description}</p>
+                  <p className="text-xs text-gray-400">
+                    Class ID: {chapter.clazzId}
+                  </p>
+                </Link>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openEditModal(chapter)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(chapter.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => openEditModal(chapter)}>
-                Edit
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDelete(chapter.id)}>
-                Delete
-              </Button>
             </div>
-          </div>
-          </Link>
-        ))}
+          ))}
       </div>
     </div>
   );

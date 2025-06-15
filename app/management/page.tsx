@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import { classManagementService } from "@/services/class_management_service";
 import { ClassModel } from "@/models/class_model";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 
 export default function ManageClassesPage() {
   const [classes, setClasses] = useState<ClassModel[]>([]);
@@ -99,10 +98,7 @@ export default function ManageClassesPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex items-center mb-4 gap-2">
-        <Link href="/"><ChevronLeft className="w-4 h-4"/></Link>
-        <h1 className="text-2xl font-bold">Learning Resource Management</h1>
-      </div>
+      <h1 className="text-2xl font-bold mb-4">Learning Resource Management</h1>
       <h2 className="text-xl font-bold mb-4">Manage Classes</h2>
       <Dialog open={isCreateModalOpen} onOpenChange={setCreateModalOpen}>
         <DialogTrigger asChild>
@@ -146,30 +142,31 @@ export default function ManageClassesPage() {
 
       <div className="mt-4">
         {classes.map((clazz) => (
-          <Link href={`/management/${clazz.id}`} key={clazz.id}>
-            <div className="flex items-center justify-between p-2 border-b hover:bg-gray-50 focus-within:bg-gray-100">
-              <div>
-                <h2 className="font-semibold hover:underline">{clazz.title}</h2>
-                <p className="text-sm text-gray-500">{clazz.description}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEditModal(clazz)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(clazz.id)}
-                >
-                  Delete
-                </Button>
-              </div>
+          <div
+            key={clazz.id}
+            className="flex items-center justify-between p-2 border-b hover:bg-gray-50 focus-within:bg-gray-100"
+          >
+            <Link href={`/management/${clazz.id}`}>
+              <h2 className="font-semibold hover:underline">{clazz.title}</h2>
+              <p className="text-sm text-gray-500">{clazz.description}</p>
+            </Link>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openEditModal(clazz)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleDelete(clazz.id)}
+              >
+                Delete
+              </Button>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 

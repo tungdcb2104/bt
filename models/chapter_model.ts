@@ -5,6 +5,6 @@ export type ChapterModel = {
     title: string;
     clazzId?: number;
     description: string;
-    image?: string;
+    image?: File | string | null;
     listLesson?: LessonModel[];
 }

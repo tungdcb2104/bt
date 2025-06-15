@@ -15,11 +15,11 @@ class LessonRepositoryImpl extends LessonRepository {
     }
 
     public async createLesson(data: any): Promise<any> {
-        return this.instance.post('/lesson', data);
+        return this.instance.post('/lesson', data).then(res => res.data);
     }
 
     public async updateLesson(id: string, data: any): Promise<any> {
-        return this.instance.put(`/lesson/${id}`, data);
+        return this.instance.put(`/lesson/${id}`, data).then(res => res.data);
     }
 
     public async deleteLesson(id: string): Promise<any> {
