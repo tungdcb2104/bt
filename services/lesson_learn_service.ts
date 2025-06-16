@@ -16,6 +16,15 @@ class LessonLearnService {
             throw error;
         }
     }
+
+    async getAllLessons(): Promise<LessonModel[]> {
+        try {
+            return await this.lessonRepository.getAllLessons();
+        } catch (error) {
+            // console.error(`Failed to fetch lessons:`, error);
+            throw error;
+        }
+    }
 }
 
 export const lessonLearnService: LessonLearnService = new LessonLearnService(lessonRepository);

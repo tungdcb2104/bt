@@ -4,6 +4,7 @@ import { LessonModel } from "@/models/lesson_model";
 
 export abstract class LessonRepository extends LearningRepository {
     public abstract getLessonById(id: string): Promise<LessonModel>;
+    public abstract getAllLessons(): Promise<LessonModel[]>;
     public abstract createLesson(data: any): Promise<any>;
     public abstract updateLesson(id: string, data: any): Promise<any>;
     public abstract deleteLesson(id: string): Promise<any>;
@@ -12,6 +13,10 @@ export abstract class LessonRepository extends LearningRepository {
 class LessonRepositoryImpl extends LessonRepository {
     public async getLessonById(id: string): Promise<LessonModel> {
         return this.instance.get(`/lesson/${id}`).then(res => res.data);
+    }
+
+    public async getAllLessons(): Promise<LessonModel[]> {
+        return this.instance.get('/lessons').then(res => res.data);
     }
 
     public async createLesson(data: any): Promise<any> {
