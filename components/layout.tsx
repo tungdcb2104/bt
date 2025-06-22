@@ -135,6 +135,12 @@ export function Layout({ children }: LayoutProps) {
                     <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>Hồ sơ</DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <a href="/courses/registered">Khóa học đã đăng ký</a>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <a href="/lessons/registered">Bài học đã đăng ký</a>
+                    </DropdownMenuItem>
                     <DropdownMenuItem>Bài học của tôi</DropdownMenuItem>
                     <DropdownMenuItem>Thẻ ghi nhớ</DropdownMenuItem>
                     <DropdownMenuItem>Cài đặt</DropdownMenuItem>

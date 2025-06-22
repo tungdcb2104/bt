@@ -7,8 +7,38 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Star, Filter } from "lucide-react"
+import { useEffect, useState } from "react"
+
+function getRegisteredCourses() {
+  if (typeof window === "undefined") return []
+  try {
+    return JSON.parse(localStorage.getItem("registeredCourses") || "[]")
+  } catch {
+    return []
+  }
+}
+
+function setRegisteredCourses(courses: any[]) {
+  localStorage.setItem("registeredCourses", JSON.stringify(courses))
+}
 
 export default function CoursesPage() {
+  const [registered, setRegistered] = useState<any[]>([])
+
+  useEffect(() => {
+    setRegistered(getRegisteredCourses())
+  }, [])
+
+  const handleRegister = (course: any) => {
+    const current = getRegisteredCourses()
+    if (!current.find((c: any) => c.title === course.title)) {
+      const updated = [...current, { ...course, pinned: false }]
+      setRegisteredCourses(updated)
+      setRegistered(updated)
+      alert("Đăng ký khóa học thành công!")
+    }
+  }
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -257,8 +287,13 @@ export default function CoursesPage() {
                               </div>
                             </CardContent>
                             <CardFooter>
-                              <Button asChild className="w-full">
-                                <Link href={course.href}>Xem khóa học</Link>
+                              <Button
+                                className="w-full mt-2"
+                                variant={registered.find((c) => c.title === course.title) ? "secondary" : "default"}
+                                disabled={!!registered.find((c) => c.title === course.title)}
+                                onClick={() => handleRegister(course)}
+                              >
+                                {registered.find((c) => c.title === course.title) ? "Đã đăng ký" : "Đăng ký"}
                               </Button>
                             </CardFooter>
                           </Card>
@@ -381,8 +416,13 @@ export default function CoursesPage() {
                                         {course.originalPrice}
                                       </div>
                                     </div>
-                                    <Button asChild className="w-full md:w-auto">
-                                      <Link href={course.href}>Xem khóa học</Link>
+                                    <Button
+                                      className="w-full mt-2"
+                                      variant={registered.find((c) => c.title === course.title) ? "secondary" : "default"}
+                                      disabled={!!registered.find((c) => c.title === course.title)}
+                                      onClick={() => handleRegister(course)}
+                                    >
+                                      {registered.find((c) => c.title === course.title) ? "Đã đăng ký" : "Đăng ký"}
                                     </Button>
                                   </div>
                                 </div>
