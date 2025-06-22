@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Star, Filter } from "lucide-react"
 import { useEffect, useState } from "react"
+import { toast } from "@/hooks/use-toast"
 
 function getRegisteredCourses() {
   if (typeof window === "undefined") return []
@@ -35,7 +36,10 @@ export default function CoursesPage() {
       const updated = [...current, { ...course, pinned: false }]
       setRegisteredCourses(updated)
       setRegistered(updated)
-      alert("Đăng ký khóa học thành công!")
+      toast({
+        title: "Đăng ký thành công!",
+        description: `Bạn đã đăng ký khóa học '${course.title}'.`,
+      })
     }
   }
 
@@ -286,15 +290,20 @@ export default function CoursesPage() {
                                 </span>
                               </div>
                             </CardContent>
-                            <CardFooter>
-                              <Button
-                                className="w-full mt-2"
-                                variant={registered.find((c) => c.title === course.title) ? "secondary" : "default"}
-                                disabled={!!registered.find((c) => c.title === course.title)}
-                                onClick={() => handleRegister(course)}
-                              >
-                                {registered.find((c) => c.title === course.title) ? "Đã đăng ký" : "Đăng ký"}
-                              </Button>
+                            <CardFooter className="flex flex-col gap-2">
+                              {registered.find((c) => c.title === course.title) ? (
+                                <Button asChild className="w-full">
+                                  <Link href={course.href}>Xem khóa học</Link>
+                                </Button>
+                              ) : (
+                                <Button
+                                  className={`w-full transition-all duration-200 ${registered.find((c) => c.title === course.title) ? 'scale-95 opacity-80' : ''}`}
+                                  variant="default"
+                                  onClick={() => handleRegister(course)}
+                                >
+                                  Đăng ký
+                                </Button>
+                              )}
                             </CardFooter>
                           </Card>
                         )
@@ -416,14 +425,21 @@ export default function CoursesPage() {
                                         {course.originalPrice}
                                       </div>
                                     </div>
-                                    <Button
-                                      className="w-full mt-2"
-                                      variant={registered.find((c) => c.title === course.title) ? "secondary" : "default"}
-                                      disabled={!!registered.find((c) => c.title === course.title)}
-                                      onClick={() => handleRegister(course)}
-                                    >
-                                      {registered.find((c) => c.title === course.title) ? "Đã đăng ký" : "Đăng ký"}
-                                    </Button>
+                                    <CardFooter className="flex flex-col gap-2">
+                                      {registered.find((c) => c.title === course.title) ? (
+                                        <Button asChild className="w-full">
+                                          <Link href={course.href}>Xem khóa học</Link>
+                                        </Button>
+                                      ) : (
+                                        <Button
+                                          className={`w-full transition-all duration-200 ${registered.find((c) => c.title === course.title) ? 'scale-95 opacity-80' : ''}`}
+                                          variant="default"
+                                          onClick={() => handleRegister(course)}
+                                        >
+                                          Đăng ký
+                                        </Button>
+                                      )}
+                                    </CardFooter>
                                   </div>
                                 </div>
                               </div>
