@@ -7,8 +7,42 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Star, Filter } from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "@/hooks/use-toast"
+
+function getRegisteredCourses() {
+  if (typeof window === "undefined") return []
+  try {
+    return JSON.parse(localStorage.getItem("registeredCourses") || "[]")
+  } catch {
+    return []
+  }
+}
+
+function setRegisteredCourses(courses: any[]) {
+  localStorage.setItem("registeredCourses", JSON.stringify(courses))
+}
 
 export default function CoursesPage() {
+  const [registered, setRegistered] = useState<any[]>([])
+
+  useEffect(() => {
+    setRegistered(getRegisteredCourses())
+  }, [])
+
+  const handleRegister = (course: any) => {
+    const current = getRegisteredCourses()
+    if (!current.find((c: any) => c.title === course.title)) {
+      const updated = [...current, { ...course, pinned: false }]
+      setRegisteredCourses(updated)
+      setRegistered(updated)
+      toast({
+        title: "Đăng ký thành công!",
+        description: `Bạn đã đăng ký khóa học '${course.title}'.`,
+      })
+    }
+  }
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -256,10 +290,20 @@ export default function CoursesPage() {
                                 </span>
                               </div>
                             </CardContent>
-                            <CardFooter>
-                              <Button asChild className="w-full">
-                                <Link href={course.href}>Xem khóa học</Link>
-                              </Button>
+                            <CardFooter className="flex flex-col gap-2">
+                              {registered.find((c) => c.title === course.title) ? (
+                                <Button asChild className="w-full">
+                                  <Link href={course.href}>Xem khóa học</Link>
+                                </Button>
+                              ) : (
+                                <Button
+                                  className={`w-full transition-all duration-200 ${registered.find((c) => c.title === course.title) ? 'scale-95 opacity-80' : ''}`}
+                                  variant="default"
+                                  onClick={() => handleRegister(course)}
+                                >
+                                  Đăng ký
+                                </Button>
+                              )}
                             </CardFooter>
                           </Card>
                         )
@@ -381,9 +425,21 @@ export default function CoursesPage() {
                                         {course.originalPrice}
                                       </div>
                                     </div>
-                                    <Button asChild className="w-full md:w-auto">
-                                      <Link href={course.href}>Xem khóa học</Link>
-                                    </Button>
+                                    <CardFooter className="flex flex-col gap-2">
+                                      {registered.find((c) => c.title === course.title) ? (
+                                        <Button asChild className="w-full">
+                                          <Link href={course.href}>Xem khóa học</Link>
+                                        </Button>
+                                      ) : (
+                                        <Button
+                                          className={`w-full transition-all duration-200 ${registered.find((c) => c.title === course.title) ? 'scale-95 opacity-80' : ''}`}
+                                          variant="default"
+                                          onClick={() => handleRegister(course)}
+                                        >
+                                          Đăng ký
+                                        </Button>
+                                      )}
+                                    </CardFooter>
                                   </div>
                                 </div>
                               </div>

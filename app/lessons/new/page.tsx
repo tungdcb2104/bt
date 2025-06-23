@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft } from "lucide-react"
 import { lessonRepository } from "@/repositories/lesson_repository"
+import CreateItemForm from "@/components/CreateItemForm"
 
 export default function NewLessonPage() {
   const router = useRouter()
@@ -88,5 +89,9 @@ export default function NewLessonPage() {
         </Card>
       </div>
     </Layout>
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-xl font-semibold mb-4">Tạo nội dung cho bài học</h2>
+      <CreateItemForm />
+    </div>
   )
 } 
