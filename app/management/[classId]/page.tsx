@@ -42,6 +42,7 @@ export default function ManageChaptersPage({
   const { classId } = use(params);
 
   useEffect(() => {
+    setNewChapterClazzId(classId);
     async function fetchData() {
       try {
         const classInfo = await chapterManagementService.getClassData(classId);

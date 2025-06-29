@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { userService } from "@/services/user_service";
 import { ClipLoader } from "react-spinners";
 
@@ -31,7 +31,7 @@ export function Layout({ children }: LayoutProps) {
       } else {
         setIsLogin(false);
       }
-      }).catch((error) => {
+      }).catch((_) => {
         setIsLogin(false);
       });
     }, []
@@ -45,11 +45,11 @@ export function Layout({ children }: LayoutProps) {
     userService.logout();
   }
 
-  useLayoutEffect (() => {
+  useEffect (() => {
     checkLoginListener(); // Initial check
     setTimeout(() => {
       setIsLogin((state) => state ?? false);
-    }, 5000); // Simulate delay for initial loading
+    }, 5000)
   }, []);
 
   return (

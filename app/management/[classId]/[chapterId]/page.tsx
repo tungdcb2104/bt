@@ -33,6 +33,7 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
 
 
   useEffect(() => {
+    setChapterId(lastChapterId);
     async function fetchLessons() {
       try {
         const chapterData = await lessonManagementService.getChapterData(lastChapterId);
