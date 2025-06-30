@@ -15,6 +15,10 @@ import { Label } from '@/components/ui/label';
 import { lessonManagementService } from '@/services/lesson_management_service';
 import { LearningType, LessonModel } from '@/models/lesson_model';
 import Link from 'next/link';
+import { Pin } from "lucide-react";
+import CreateQuestionForm from "@/components/CreateQuestionForm";
+import CreateFlashcardForm from "@/components/CreateFlashcardForm";
+import CreateQuizVideoForm from "@/components/CreateQuizVideoForm";
 
 export default function ManageLessonsPage({ params }: { params: Promise<{ classId: string, chapterId: string }> }) {
   const [lessons, setLessons] = useState<LessonModel[]>([]);
@@ -22,6 +26,11 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
   const [selectedLesson, setSelectedLesson] = useState<LessonModel | null>(null);
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isContentModalOpen, setContentModalOpen] = useState(false);
+  const [contentType, setContentType] = useState("question");
+  const [contentLesson, setContentLesson] = useState<LessonModel | null>(null);
+  const [pinnedLessons, setPinnedLessons] = useState<number[]>([]);
+
   const [chapterList, setChapterList] = useState<{ id: number; title: string }[]>([]);
 
   // Form state
@@ -117,6 +126,26 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
     setCreateModalOpen(true);
   }
 
+  // Pin/unpin logic
+  const handleTogglePin = (id: number) => {
+    setPinnedLessons((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
+    );
+  };
+
+  // Open content modal
+  const openContentModal = (lesson: LessonModel) => {
+    setContentLesson(lesson);
+    setContentType("question");
+    setContentModalOpen(true);
+  };
+
+  // Sắp xếp bài học: bài học pin lên đầu
+  const sortedLessons = [
+    ...lessons.filter((l) => pinnedLessons.includes(l.id)),
+    ...lessons.filter((l) => !pinnedLessons.includes(l.id)),
+  ];
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -167,24 +196,36 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
       </Dialog>
       
       <div className="mt-4">
-        {lessons.map((lesson) => (
+        {sortedLessons.map((lesson) => (
           <div key={lesson.id} className="flex items-center justify-between p-2 border-b hover:bg-gray-50 focus-within:bg-gray-100">
             <div className="flex-1">
-              <Link href={`/management/${lastClassId}/${lesson.chapterId}/${lesson.id}`}>
-                <h2 className="font-semibold hover:underline">{lesson.title}</h2>
+              <div className="flex items-center gap-2">
+                <Link href={`/management/${lastClassId}/${lesson.chapterId}/${lesson.id}`}>
+                <h2 className="font-semibold hover:underline flex items-center gap-2">
+                {lesson.title}
+              </h2>
               </Link>
+              <button
+                  className={`p-1 rounded-full transition-colors ${pinnedLessons.includes(lesson.id) ? 'bg-yellow-200 text-yellow-600' : 'bg-gray-100 text-gray-400 hover:bg-yellow-100 hover:text-yellow-600'}`}
+                  title={pinnedLessons.includes(lesson.id) ? 'Bỏ ghim' : 'Ghim bài học'}
+                  onClick={() => handleTogglePin(lesson.id)}
+                >
+                  <Pin size={16} fill={pinnedLessons.includes(lesson.id) ? '#facc15' : 'none'} />
+                </button>
+                </div>
               <p className="text-sm text-gray-500">{lesson.description}</p>
               <p className="text-xs text-gray-400">Chapter ID: {lesson.chapterId} | Type: {lesson.learningType}</p>
             </div>
             <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => openEditModal(lesson)}>Edit</Button>
+                <Button variant="secondary" size="sm" onClick={() => openContentModal(lesson)}>Thêm nội dung</Button>
                 <Button variant="destructive" size="sm" onClick={() => handleDelete(lesson.id)}>Delete</Button>
             </div>
           </div>
         ))}
       </div>
 
-       <Dialog open={isEditModalOpen} onOpenChange={setEditModalOpen}>
+      <Dialog open={isEditModalOpen} onOpenChange={setEditModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Lesson</DialogTitle>
@@ -219,6 +260,28 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
           <DialogFooter>
             <Button type="submit" onClick={handleUpdate}>Save Changes</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isContentModalOpen} onOpenChange={setContentModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Thêm nội dung cho bài học: {contentLesson?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="mb-4">
+            <select
+              className="mb-2 border p-2"
+              value={contentType}
+              onChange={e => setContentType(e.target.value)}
+            >
+              <option value="question">Câu hỏi</option>
+              <option value="flashcard">Flashcard</option>
+              <option value="quiz_video">Quiz Video</option>
+            </select>
+            {contentType === "question" && contentLesson && <CreateQuestionForm lessonId={contentLesson.id} onQuestionCreated={() => setContentModalOpen(false)} />}
+            {contentType === "flashcard" && contentLesson && <CreateFlashcardForm lessonId={contentLesson.id} onFlashcardCreated={() => setContentModalOpen(false)} />}
+            {contentType === "quiz_video" && contentLesson && <CreateQuizVideoForm lessonId={contentLesson.id} onQuizVideoCreated={() => setContentModalOpen(false)} />}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

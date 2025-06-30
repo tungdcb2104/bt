@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function CreateFlashcardForm() {
+export default function CreateFlashcardForm(props : {lessonId: number, onFlashcardCreated?: () => void}) {
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
 

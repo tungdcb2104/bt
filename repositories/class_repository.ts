@@ -11,15 +11,15 @@ export abstract class ClassRepository extends LearningRepository {
     public abstract getLearningClasses(): Promise<any>;
     public abstract registerClass(id: string): Promise<any>;
     public abstract unregisterClass(id: string): Promise<any>;
+    public abstract pinClass(id: string): Promise<any>;
+    public abstract unpinClass(id: string): Promise<any>;
+    public abstract getPinnedClass(): Promise<any>;
 }
 
 class ClassRepositoryImpl extends ClassRepository {
-    public async getClasses(name?: string , categories?: string): Promise<Array<ClassModel>> {
+    public async getClasses(name?: string, categories?: string): Promise<Array<ClassModel>> {
         const response = this.instance.get('/clazz', {
-            params: {
-                name: name,
-                categories: categories
-            }
+            params: { name, categories }
         });
         return response.then(res => res.data);
     }
@@ -40,21 +40,38 @@ class ClassRepositoryImpl extends ClassRepository {
     }
 
     public async deleteClass(id: string): Promise<void> {
-        return this.instance.delete(`/clazz/${id}`);
+        await this.instance.delete(`/clazz/${id}`);
     }
 
     public async getLearningClasses(): Promise<any> {
-        return this.instance.get('/clazz/learning-classes');
+        const response = await this.instance.get('/clazz/learning-classes');
+        return response.data;
     }
 
     public async registerClass(id: string): Promise<any> {
-        return this.instance.post(`/clazz/${id}/register`);
+        const response = await this.instance.post(`/clazz/${id}/register`);
+        return response.data;
     }
 
     public async unregisterClass(id: string): Promise<any> {
-        return this.instance.post(`/clazz/${id}/register`);
+        const response = await this.instance.post(`/clazz/${id}/unregister`);
+        return response.data;
     }
-    
+
+    public async pinClass(id: string): Promise<any> {
+        const response = await this.instance.put(`/clazz/${id}/pin`);
+        return response.data;
+    }
+
+    public async unpinClass(id: string): Promise<any> {
+        const response = await this.instance.put(`/clazz/${id}/unPin`);
+        return response.data;
+    }
+
+    public async getPinnedClass(): Promise<any> {
+        const response = await this.instance.get(`/clazz/pin-clazz`);
+        return response.data;
+    }
 }
 
 export const classRepository: ClassRepository = new ClassRepositoryImpl();

@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function CreateQuestionForm() {
+export default function CreateQuestionForm(props : {lessonId: number, onQuestionCreated?: () => void}) {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 

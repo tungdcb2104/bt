@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function CreateQuizVideoForm() {
+export default function CreateQuizVideoForm(props : {lessonId: number, onQuizVideoCreated?: () => void}) {
   const [videoUrl, setVideoUrl] = useState("");
   const [question, setQuestion] = useState("");
 
