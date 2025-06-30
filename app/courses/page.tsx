@@ -293,19 +293,24 @@ export default function CoursesPage() {
                               </div>
                             </CardContent>
                             <CardFooter className="flex flex-col gap-2">
-                              {registered.find((c) => c.title === course.title) ? (
-                                <Button asChild className="w-full">
-                                  <Link href={course.href}>Xem khóa học</Link>
+                              <div className="flex gap-2 w-full">
+                                {registered.find((c) => c.title === course.title) ? (
+                                  <Button asChild className="flex-1">
+                                    <Link href={course.href}>Xem khóa học</Link>
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    className="flex-1"
+                                    variant="default"
+                                    onClick={() => handleRegister(course)}
+                                  >
+                                    Đăng ký
+                                  </Button>
+                                )}
+                                <Button asChild variant="outline" className="flex-1">
+                                  <Link href={course.href}>Xem chi tiết</Link>
                                 </Button>
-                              ) : (
-                                <Button
-                                  className={`w-full transition-all duration-200 ${registered.find((c) => c.title === course.title) ? 'scale-95 opacity-80' : ''}`}
-                                  variant="default"
-                                  onClick={() => handleRegister(course)}
-                                >
-                                  Đăng ký
-                                </Button>
-                              )}
+                              </div>
                             </CardFooter>
                           </Card>
                         )
@@ -428,19 +433,24 @@ export default function CoursesPage() {
                                       </div>
                                     </div>
                                     <CardFooter className="flex flex-col gap-2">
-                                      {registered.find((c) => c.title === course.title) ? (
-                                        <Button asChild className="w-full">
-                                          <Link href={course.href}>Xem khóa học</Link>
+                                      <div className="flex gap-2 w-full">
+                                        {registered.find((c) => c.title === course.title) ? (
+                                          <Button asChild className="flex-1">
+                                            <Link href={course.href}>Xem khóa học</Link>
+                                          </Button>
+                                        ) : (
+                                          <Button
+                                            className="flex-1"
+                                            variant="default"
+                                            onClick={() => handleRegister(course)}
+                                          >
+                                            Đăng ký
+                                          </Button>
+                                        )}
+                                        <Button asChild variant="outline" className="flex-1">
+                                          <Link href={course.href}>Xem chi tiết</Link>
                                         </Button>
-                                      ) : (
-                                        <Button
-                                          className={`w-full transition-all duration-200 ${registered.find((c) => c.title === course.title) ? 'scale-95 opacity-80' : ''}`}
-                                          variant="default"
-                                          onClick={() => handleRegister(course)}
-                                        >
-                                          Đăng ký
-                                        </Button>
-                                      )}
+                                      </div>
                                     </CardFooter>
                                   </div>
                                 </div>
