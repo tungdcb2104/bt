@@ -3,14 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function CreateQuizVideoForm(props : {lessonId: number, onQuizVideoCreated?: () => void}) {
+export default function CreateQuizVideoForm(props: {onQuizVideoCreated: (content: {videoUrl: string, question: string}) => void}) {
   const [videoUrl, setVideoUrl] = useState("");
   const [question, setQuestion] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Xử lý lưu quiz video
-    alert(`Đã tạo quiz video: ${videoUrl} - Câu hỏi: ${question}`);
+    props.onQuizVideoCreated({videoUrl, question})
     setVideoUrl("");
     setQuestion("");
   };

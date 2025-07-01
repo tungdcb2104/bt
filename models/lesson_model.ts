@@ -1,3 +1,5 @@
+import { LearningModel } from "./learning_model";
+
 export type LearningType = "question" | "flashcard";
 
 export type LessonModel = {
@@ -6,5 +8,5 @@ export type LessonModel = {
     chapterId: number;
     description: string;
     learningType: LearningType;
-    listLearning?: any
+    listLearning?: LearningModel[]
 }

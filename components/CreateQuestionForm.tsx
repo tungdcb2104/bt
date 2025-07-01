@@ -3,41 +3,43 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function CreateQuestionForm(props : {lessonId: number, onQuestionCreated?: () => void}) {
+interface Props {
+  onCreated: (content: { question: string; description?: string }) => void;
+}
+
+export default function CreateQuestionForm({ onCreated }: Props) {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Xử lý lưu câu hỏi
-    alert(`Đã tạo câu hỏi: ${question} - Đáp án: ${answer}`);
+    onCreated({ question, description });
     setQuestion("");
-    setAnswer("");
+    setDescription("");
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       <div>
-        <Label htmlFor="question">Nội dung câu hỏi</Label>
+        <Label htmlFor="question">Câu hỏi</Label>
         <Input
           id="question"
           value={question}
-          onChange={e => setQuestion(e.target.value)}
+          onChange={(e) => setQuestion(e.target.value)}
           placeholder="Nhập nội dung câu hỏi"
           required
         />
       </div>
       <div>
-        <Label htmlFor="answer">Đáp án</Label>
+        <Label htmlFor="description">Mô tả (tuỳ chọn)</Label>
         <Input
-          id="answer"
-          value={answer}
-          onChange={e => setAnswer(e.target.value)}
-          placeholder="Nhập đáp án"
-          required
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Thêm mô tả nếu có"
         />
       </div>
       <Button type="submit">Tạo câu hỏi</Button>
     </form>
   );
-} 
+}

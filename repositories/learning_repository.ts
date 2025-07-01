@@ -23,6 +23,7 @@ export abstract class LearningRepository extends BaseRepository {
   }
 
   protected initResponseInterceptor(): void {
+    console.log('Init response interceptor')
     this.instance.interceptors.response.use(
       (response) => response,
       async (error) => {

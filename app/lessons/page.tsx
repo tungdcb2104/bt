@@ -76,7 +76,7 @@ export default function LessonsPage() {
             {lessons.map((lesson) => (
               <Card key={lesson.id}>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-xl">{lesson.name}</CardTitle>
+                  <CardTitle className="text-xl">{lesson.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-2">
                   <p className="text-sm text-muted-foreground line-clamp-2">
