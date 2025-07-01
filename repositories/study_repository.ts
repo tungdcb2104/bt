@@ -1,18 +1,21 @@
+import { LessonResultModel } from "@/models/lesson_result_model";
 import { LearningRepository } from "./learning_repository";
-import { userService } from "@/services/user_service";
 
 export abstract class StudyRepository extends LearningRepository {
-    public abstract study(): Promise<any>;
-    public abstract evaluate(id: string): Promise<any>;
+  public abstract study(lessonId: number, strategyId: number): Promise<any>;
+  public abstract evaluate(data: LessonResultModel): Promise<any>;
 }
 
 class StudyRepositoryImpl extends StudyRepository {
-    public study(): Promise<any> {
-        return this.instance.get('/study');
-    }
-    public evaluate() : Promise<any> {
-        return this.instance.post('/study');
-    }
+  public study(lessonId: number, strategyId: number): Promise<any> {
+    return this.instance.get(`/v1/study`, {
+      params: { lid: lessonId, sid: strategyId },
+    }).then((res) => res.data);
+  }
+
+  public evaluate(data: LessonResultModel): Promise<any> {
+    return this.instance.post(`/v1/study`, data).then((res) => res.data);
+  }
 }
 
 export const studyRepository: StudyRepository = new StudyRepositoryImpl();
