@@ -23,6 +23,9 @@ import { Thumbtack } from "lucide-react";
 import CreateQuestionForm from "@/components/CreateQuestionForm";
 import CreateFlashcardForm from "@/components/CreateFlashcardForm";
 import CreateQuizVideoForm from "@/components/CreateQuizVideoForm";
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, KeyboardSensor, sortableKeyboardCoordinates } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 export default function ManageLessonsPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -41,6 +44,12 @@ export default function ManageLessonsPage() {
   const [chapterId, setChapterId] = useState('');
   const [learningType, setLearningType] = useState<LearningType>('question');
 
+  // Thêm state cho edit content
+  const [isEditContentModalOpen, setEditContentModalOpen] = useState(false);
+  const [editContentLesson, setEditContentLesson] = useState<Lesson | null>(null);
+  const [editQuestions, setEditQuestions] = useState<any[]>([]);
+  const [editFlashcards, setEditFlashcards] = useState<any[]>([]);
+  const [isEditingContent, setIsEditingContent] = useState(false);
 
   useEffect(() => {
     async function fetchLessons() {
@@ -140,6 +149,14 @@ export default function ManageLessonsPage() {
     ...lessons.filter((l) => !pinnedLessons.includes(l.id)),
   ];
 
+  const openEditContentModal = (lesson: Lesson) => {
+    setEditContentLesson(lesson);
+    setIsEditingContent(false);
+    if (lesson.learningType === "question") setEditQuestions(lesson.listLearning?.map((q, idx) => ({ ...q, id: q.id ?? idx+1 })) || []);
+    if (lesson.learningType === "flashcard") setEditFlashcards(lesson.listLearning?.map((f, idx) => ({ ...f, id: f.id ?? idx+1 })) || []);
+    setEditContentModalOpen(true);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -202,6 +219,7 @@ export default function ManageLessonsPage() {
             <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => openEditModal(lesson)}>Edit</Button>
                 <Button variant="secondary" size="sm" onClick={() => openContentModal(lesson)}>Thêm nội dung</Button>
+                <Button variant="outline" size="sm" onClick={() => openEditContentModal(lesson)}>Edit Content</Button>
                 <Button variant="destructive" size="sm" onClick={() => handleDelete(lesson.id)}>Delete</Button>
             </div>
           </div>
@@ -259,6 +277,33 @@ export default function ManageLessonsPage() {
             {contentType === "flashcard" && contentLesson && <CreateFlashcardForm lessonId={contentLesson.id} />}
             {contentType === "quiz_video" && contentLesson && <CreateQuizVideoForm lessonId={contentLesson.id} />}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditContentModalOpen} onOpenChange={setEditContentModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Chỉnh sửa nội dung bài học: {editContentLesson?.title}</DialogTitle>
+          </DialogHeader>
+          {editContentLesson && (
+            <div className="mt-4">
+              {editContentLesson.learningType === "question" ? (
+                <>
+                  {/* QuestionEditor giống như ở file lesson detail */}
+                  {/* ... QuestionEditor code ... */}
+                </>
+              ) : editContentLesson.learningType === "flashcard" ? (
+                <>
+                  {/* FlashcardEditor giống như ở file lesson detail */}
+                  {/* ... FlashcardEditor code ... */}
+                </>
+              ) : null}
+              <div className="flex gap-2 mt-4">
+                <Button onClick={/* handleSaveContent */}>Save</Button>
+                <Button variant="outline" onClick={() => setEditContentModalOpen(false)}>Cancel</Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

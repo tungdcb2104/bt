@@ -120,9 +120,6 @@ function SortableFlashcardItem({ id, idx, f, setFlashcards }) {
 export default function LessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [lesson, setLesson] = useState<LessonModel | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [editQuestions, setEditQuestions] = useState<any[]>([])
-  const [editFlashcards, setEditFlashcards] = useState<any[]>([])
-  const [isEditing, setIsEditing] = useState(false)
   const { id } = use(params);
 
   useEffect(() => {
@@ -130,35 +127,14 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
       try {
         const lesson = await lessonLearnService.getLesson(id);
         setLesson(lesson)
-        if (lesson.learningType === "question") setEditQuestions(lesson.listLearning?.map((q, idx) => ({ ...q, id: q.id ?? idx+1 })) || [])
-        if (lesson.learningType === "flashcard") setEditFlashcards(lesson.listLearning?.map((f, idx) => ({ ...f, id: f.id ?? idx+1 })) || [])
       } catch (error) {
         // console.error("Error fetching lesson data:", error)
       } finally {
         setIsLoading(false)
       }
     }
-
     fetchData()
   }, [id])
-
-  const handleSave = () => {
-    // TODO: Gọi API lưu lesson mới hoặc cập nhật lesson
-    setIsEditing(false)
-    if (lesson) {
-      if (lesson.learningType === "question") setLesson({ ...lesson, listLearning: editQuestions })
-      if (lesson.learningType === "flashcard") setLesson({ ...lesson, listLearning: editFlashcards })
-    }
-  }
-  const handleCancel = () => {
-    setIsEditing(false)
-    if (lesson) {
-      if (lesson.learningType === "question") setEditQuestions(lesson.listLearning?.map((q, idx) => ({ ...q, id: q.id ?? idx+1 })) || [])
-      if (lesson.learningType === "flashcard") setEditFlashcards(lesson.listLearning?.map((f, idx) => ({ ...f, id: f.id ?? idx+1 })) || [])
-    }
-  }
-  const handleAddQuestion = () => setEditQuestions(prev => [...prev, { id: Date.now(), question: "", answer: "" }])
-  const handleAddFlashcard = () => setEditFlashcards(prev => [...prev, { id: Date.now(), frontContent: "", backContent: "" }])
 
   return (
     <Layout>
@@ -171,7 +147,6 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
             </Link>
           )}
         </div>
-
         {isLoading ? (
           <div className="space-y-4">
             <div className="h-10 bg-gray-200 rounded w-1/4 animate-pulse"></div>
@@ -180,59 +155,31 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
           </div>
         ) : lesson ? (
           <>
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h1 className="text-3xl font-bold">{lesson.title}</h1>
-                <p className="text-muted-foreground mt-2">{lesson.description}</p>
-              </div>
-              <div>
-                {!isEditing && <Button onClick={() => setIsEditing(true)}>Chỉnh sửa nội dung</Button>}
-              </div>
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold">{lesson.title}</h1>
+              <p className="text-muted-foreground mt-2">{lesson.description}</p>
             </div>
-
             <div className="mt-8">
               {lesson.learningType === "question" ? (
-                isEditing ? (
-                  <>
-                    <QuestionEditor questions={editQuestions} setQuestions={setEditQuestions} />
-                    <Button onClick={handleAddQuestion} className="mt-2">Thêm câu hỏi</Button>
-                    <div className="flex gap-2 mt-4">
-                      <Button onClick={handleSave}>Save</Button>
-                      <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                <>
+                  {lesson.listLearning?.map((q, idx) => (
+                    <div key={q.id || idx} className="mb-4 border p-2 rounded">
+                      <div className="font-semibold">Câu hỏi {idx + 1}</div>
+                      <div>{q.question}</div>
+                      <div className="text-sm text-muted-foreground">Đáp án: {q.answer}</div>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    {editQuestions.map((q, idx) => (
-                      <div key={q.id} className="mb-4 border p-2 rounded">
-                        <div className="font-semibold">Câu hỏi {idx + 1}</div>
-                        <div>{q.question}</div>
-                        <div className="text-sm text-muted-foreground">Đáp án: {q.answer}</div>
-                      </div>
-                    ))}
-                  </>
-                )
+                  ))}
+                </>
               ) : lesson.learningType === "flashcard" ? (
-                isEditing ? (
-                  <>
-                    <FlashcardEditor flashcards={editFlashcards} setFlashcards={setEditFlashcards} />
-                    <Button onClick={handleAddFlashcard} className="mt-2">Thêm flashcard</Button>
-                    <div className="flex gap-2 mt-4">
-                      <Button onClick={handleSave}>Save</Button>
-                      <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                <>
+                  {lesson.listLearning?.map((f, idx) => (
+                    <div key={f.id || idx} className="mb-4 border p-2 rounded">
+                      <div className="font-semibold">Flashcard {idx + 1}</div>
+                      <div>Mặt trước: {f.frontContent}</div>
+                      <div>Mặt sau: {f.backContent}</div>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    {editFlashcards.map((f, idx) => (
-                      <div key={f.id} className="mb-4 border p-2 rounded">
-                        <div className="font-semibold">Flashcard {idx + 1}</div>
-                        <div>Mặt trước: {f.frontContent}</div>
-                        <div>Mặt sau: {f.backContent}</div>
-                      </div>
-                    ))}
-                  </>
-                )
+                  ))}
+                </>
               ) : null}
             </div>
           </>
