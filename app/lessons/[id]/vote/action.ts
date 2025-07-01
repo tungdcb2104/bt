@@ -1,5 +1,5 @@
-// TODO: Thêm logic đánh giá sao bài học
+// Đây là action, nhưng có thể export hàm để gọi từ UI
 export async function voteLesson(lessonId: string, stars: number) {
-  // Gọi API hoặc service đánh giá bài học
+  // TODO: Gọi API đánh giá bài học
   return { success: true };
 } 
