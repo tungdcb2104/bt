@@ -1,5 +1,6 @@
 import { ClassModel } from "@/models/class_model";
 import { classRepository, ClassRepository } from "@/repositories/class_repository";
+import { ca } from "date-fns/locale";
 
 class ClassViewService {
     private classRepository: ClassRepository;
@@ -25,6 +26,22 @@ class ClassViewService {
         } catch (error) {
             // console.error(`Failed to fetch class with id ${id}:`, error);
             throw error;
+        }
+    }
+
+    async pinClass(id: number) {
+        try {
+            await this.classRepository.pinClass(id.toString(10));
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async unpinClass(id: number) {
+        try {
+            await this.classRepository.unpinClass(id.toString(10));
+        } catch (error) {
+            throw error
         }
     }
 }

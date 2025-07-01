@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react"
+import { AwaitedReactNode, JSXElementConstructor, ReactElement, ReactNode, ReactPortal, use, useEffect, useState } from "react"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
 import { ArrowLeft } from "lucide-react"
@@ -55,17 +55,17 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
             <div className="mt-8">
               {lesson.learningType === "question" ? (
                 <>
-                  {lesson.listLearning?.map((q, idx) => (
-                    <div key={q.id || idx} className="mb-4 border p-2 rounded">
-                      <div className="font-semibold">Câu hỏi {idx + 1}</div>
-                      <div>{q.question}</div>
-                      <div className="text-sm text-muted-foreground">Đáp án: {q.answer}</div>
-                    </div>
+                  {lesson.listLearning?.map((q: { id: any; question: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; answer: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; }, idx: number) => (
+                  <div key={q.id || idx} className="mb-4 border p-2 rounded">
+                    <div className="font-semibold">Câu hỏi {idx + 1}</div>
+                    <div>{q.question}</div>
+                    <div className="text-sm text-muted-foreground">Đáp án: {q.answer}</div>
+                  </div>
                   ))}
                 </>
               ) : lesson.learningType === "flashcard" ? (
                 <>
-                  {lesson.listLearning?.map((f, idx) => (
+                  {lesson.listLearning?.map((f: { id: any; frontContent: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; backContent: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined; }, idx: number) => (
                     <div key={f.id || idx} className="mb-4 border p-2 rounded">
                       <div className="font-semibold">Flashcard {idx + 1}</div>
                       <div>Mặt trước: {f.frontContent}</div>

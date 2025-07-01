@@ -1,60 +1,63 @@
-"use client"
+"use client";
 
-import { useLayoutEffect, useState } from "react"
-import Link from "next/link"
-import { Layout } from "@/components/layout"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { BookOpen } from "lucide-react"
-import { classViewService } from "@/services/class_view_service"
-import { ClassModel } from "@/models/class_model"
-import { toast } from '@/components/ui/use-toast'
+import { useLayoutEffect, useState } from "react";
+import { Layout } from "@/components/layout";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { classViewService } from "@/services/class_view_service";
+import { ClassModel } from "@/models/class_model";
+import { toast } from "@/components/ui/use-toast";
+import { ClassCard } from "@/components/ClassCardView";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function ClassesPage() {
-  const [classes, setClasses] = useState<ClassModel[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isUsingMockData, setIsUsingMockData] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [classes, setClasses] = useState<ClassModel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter()
 
   useLayoutEffect(() => {
-    // async function fetchClasses() {
-    //   try {
-    //     const { clazzes, isUsingMockData } = await getAllClazzes()
-    //     setClasses(clazzes)
-    //     setIsUsingMockData(isUsingMockData)
-    //   } catch (error) {
-    //     console.error("Error fetching classes:", error)
-    //   } finally {
-    //     setIsLoading(false)
-    //   }
-    // }
-
-    // fetchClasses()
     async function fetchClasses() {
       try {
-        const classes = await classViewService.getAllClasses()
-        setClasses(classes)
+        const classes = await classViewService.getAllClasses();
+        setClasses(classes);
       } catch (error: Error | any) {
-        // console.error("Error fetching classes:", error)
-        setError(error.message || "Đã xảy ra lỗi khi tải dữ liệu lớp học.")
+        setError(error.message || "Đã xảy ra lỗi khi tải dữ liệu lớp học.");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
-    fetchClasses()
-  }, [])
+    fetchClasses();
+  }, []);
 
-  const handlePin = (id: number) => {
-    setClasses(prev => prev.map(c => c.id === id ? { ...c, pinned: true } : c))
-    toast({ title: 'Đã ghim lớp học!' })
-    // TODO: Gọi API pin lớp học
-  }
+  const handlePin = async (id: number) => {
+    try {
+      await classViewService.pinClass(id);
+      setClasses((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, pinned: true } : c))
+      );
+      toast({ title: "Đã ghim lớp học!" });
+    } catch (err: any) {
+      toast({ title: "Lỗi xảy ra", description: err });
+    }
+  };
 
-  const handleUnpin = (id: number) => {
-    setClasses(prev => prev.map(c => c.id === id ? { ...c, pinned: false } : c))
-    toast({ title: 'Đã bỏ ghim lớp học!' })
-    // TODO: Gọi API bỏ pin lớp học
-  }
+  const handleUnpin = async (id: number) => {
+    try {
+      await classViewService.unpinClass(id);
+      setClasses((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, pinned: false } : c))
+      );
+      toast({ title: "Đã bỏ ghim lớp học!" });
+    } catch (err: any) {
+      toast({ title: "Lỗi xảy ra", description: err });
+    }
+  };
 
   if (error) {
     return (
@@ -66,7 +69,7 @@ export default function ClassesPage() {
           </div>
         </div>
       </Layout>
-    )
+    );
   }
 
   return (
@@ -74,11 +77,14 @@ export default function ClassesPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Lớp học</h1>
-          {isUsingMockData && (
-            <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-md text-sm">
-              Đang sử dụng dữ liệu mẫu (không thể kết nối tới API)
-            </div>
-          )}
+          <div className="flex gap-2">
+            <Button onClick={() => router.push("/classes/create")}>
+            + Tạo lớp mới
+          </Button>
+          <Button variant={"secondary"} onClick={() => router.push("/classes/pinned")}>
+            Lớp đã ghim
+          </Button>
+          </div>
         </div>
 
         {isLoading ? (
@@ -102,31 +108,16 @@ export default function ClassesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {classes.map((clazz) => (
-              <Card key={clazz.id}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xl">{clazz.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {clazz.description}
-                  </p>
-                  <div className="flex items-center gap-4 mt-3">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <BookOpen className="h-4 w-4 mr-1" />
-                      <span>Chương trình học toán {clazz.title}</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild className="w-full">
-                    <Link href={`/classes/${clazz.id}`}>Xem chi tiết</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+              <ClassCard
+                key={clazz.id}
+                clazz={clazz}
+                handlePin={handlePin}
+                handleUnpin={handleUnpin}
+              />
             ))}
           </div>
         )}
       </div>
     </Layout>
-  )
-} 
+  );
+}

@@ -19,8 +19,8 @@ import { Pin } from "lucide-react";
 import CreateQuestionForm from "@/components/CreateQuestionForm";
 import CreateFlashcardForm from "@/components/CreateFlashcardForm";
 import CreateQuizVideoForm from "@/components/CreateQuizVideoForm";
-import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, KeyboardSensor, sortableKeyboardCoordinates } from '@dnd-kit/core';
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 export default function ManageLessonsPage({ params }: { params: Promise<{ classId: string, chapterId: string }> }) {
@@ -45,7 +45,7 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
 
   // Thêm state cho edit content
   const [isEditContentModalOpen, setEditContentModalOpen] = useState(false);
-  const [editContentLesson, setEditContentLesson] = useState<Lesson | null>(null);
+  const [editContentLesson, setEditContentLesson] = useState<LessonModel | null>(null);
   const [editQuestions, setEditQuestions] = useState<any[]>([]);
   const [editFlashcards, setEditFlashcards] = useState<any[]>([]);
   const [isEditingContent, setIsEditingContent] = useState(false);
@@ -155,22 +155,22 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
     ...lessons.filter((l) => !pinnedLessons.includes(l.id)),
   ];
 
-  const openEditContentModal = (lesson: Lesson) => {
+  const openEditContentModal = (lesson: LessonModel) => {
     setEditContentLesson(lesson);
     setIsEditingContent(false);
-    if (lesson.learningType === "question") setEditQuestions(lesson.listLearning?.map((q, idx) => ({ ...q, id: q.id ?? idx+1 })) || []);
-    if (lesson.learningType === "flashcard") setEditFlashcards(lesson.listLearning?.map((f, idx) => ({ ...f, id: f.id ?? idx+1 })) || []);
+    if (lesson.learningType === "question") setEditQuestions(lesson.listLearning?.map((q: { id: any; }, idx: number) => ({ ...q, id: q.id ?? idx+1 })) || []);
+    if (lesson.learningType === "flashcard") setEditFlashcards(lesson.listLearning?.map((f: { id: any; }, idx: number) => ({ ...f, id: f.id ?? idx+1 })) || []);
     setEditContentModalOpen(true);
   };
 
-  function QuestionEditor({ questions, setQuestions }) {
+  function QuestionEditor({ questions, setQuestions }: { questions: any[]; setQuestions: React.Dispatch<React.SetStateAction<any[]>> }) {
     const sensors = useSensors(
       useSensor(PointerSensor),
       useSensor(KeyboardSensor, {
         coordinateGetter: sortableKeyboardCoordinates,
       })
     );
-    const handleDragEnd = (event) => {
+    const handleDragEnd = (event: { active: any; over: any; }) => {
       const { active, over } = event;
       if (active.id !== over.id) {
         const oldIndex = questions.findIndex(q => q.id === active.id);
@@ -189,14 +189,24 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
     );
   }
 
-  function SortableQuestionItem({ id, idx, q, setQuestions }) {
+  function SortableQuestionItem({
+    id,
+    idx,
+    q,
+    setQuestions,
+  }: {
+    id: number | string;
+    idx: number;
+    q: any;
+    setQuestions: React.Dispatch<React.SetStateAction<any[]>>;
+  }) {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
       marginBottom: 12,
     };
-    const handleChange = (field, value) => {
+    const handleChange = (field: string, value: any) => {
       setQuestions(prev => prev.map((item, i) => i === idx ? { ...item, [field]: value } : item));
     };
     const handleDelete = () => {
@@ -212,14 +222,14 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
     );
   }
 
-  function FlashcardEditor({ flashcards, setFlashcards }) {
+  function FlashcardEditor({ flashcards, setFlashcards }: { flashcards: any[]; setFlashcards: React.Dispatch<React.SetStateAction<any[]>> }) {
     const sensors = useSensors(
       useSensor(PointerSensor),
       useSensor(KeyboardSensor, {
         coordinateGetter: sortableKeyboardCoordinates,
       })
     );
-    const handleDragEnd = (event) => {
+    const handleDragEnd = (event: { active: any; over: any; }) => {
       const { active, over } = event;
       if (active.id !== over.id) {
         const oldIndex = flashcards.findIndex(f => f.id === active.id);
@@ -238,14 +248,24 @@ export default function ManageLessonsPage({ params }: { params: Promise<{ classI
     );
   }
 
-  function SortableFlashcardItem({ id, idx, f, setFlashcards }) {
+  function SortableFlashcardItem({
+    id,
+    idx,
+    f,
+    setFlashcards,
+  }: {
+    id: number | string;
+    idx: number;
+    f: any;
+    setFlashcards: React.Dispatch<React.SetStateAction<any[]>>;
+  }) {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
       marginBottom: 12,
     };
-    const handleChange = (field, value) => {
+    const handleChange = (field: string, value: any) => {
       setFlashcards(prev => prev.map((item, i) => i === idx ? { ...item, [field]: value } : item));
     };
     const handleDelete = () => {
