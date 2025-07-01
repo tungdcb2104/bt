@@ -6,14 +6,15 @@ export type LearningType =
   | "single_choice_question"
   | "multi_choice_question";
 
-export interface LearningModel {
+interface _LearningModel {
+  id?: number;
   type: LearningType;
 }
 
 // ========================
 // 🎴 FlashCardModel
 // ========================
-export interface FlashCardModel extends LearningModel {
+export interface FlashCardModel extends _LearningModel {
   frontContent: string;
   backContent: string;
   frontImage?: string;
@@ -24,7 +25,7 @@ export interface FlashCardModel extends LearningModel {
 // ========================
 // ✍️ FillQuestionModel
 // ========================
-export interface FillQuestionModel extends LearningModel {
+export interface FillQuestionModel extends _LearningModel {
   readonly type: "fill_question";
   question: string;
   description?: string;
@@ -35,7 +36,7 @@ export interface FillQuestionModel extends LearningModel {
 // ========================
 // ✅ SingleChoiceQuestionModel
 // ========================
-export interface SingleChoiceQuestionModel extends LearningModel {
+export interface SingleChoiceQuestionModel extends _LearningModel {
   readonly type: "single_choice_question";
   question: string;
   description?: string;
@@ -47,10 +48,12 @@ export interface SingleChoiceQuestionModel extends LearningModel {
 // ========================
 // ☑️ MultiChoiceQuestionModel
 // ========================
-export interface MultiChoiceQuestionModel extends LearningModel {
+export interface MultiChoiceQuestionModel extends _LearningModel {
   readonly type: "multi_choice_question";
   question: string;
   description?: string;
   readonly questionType: "multi_choice";
   choices: { [label: string]: boolean }; // ví dụ: { "A": true, "B": false }
 }
+
+export type LearningModel = FillQuestionModel | SingleChoiceQuestionModel | MultiChoiceQuestionModel | FlashCardModel

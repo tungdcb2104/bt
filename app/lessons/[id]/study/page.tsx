@@ -1,35 +1,73 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
-// Giả sử đã có component QuestionLesson, FlashcardLesson, InteractiveQuiz
-// import { QuestionLesson } from '@/components/question-lesson';
-// import { FlashcardLesson } from '@/components/flashcard-lesson';
-// import { InteractiveQuiz } from '@/components/interactive-quiz';
+"use client"
 
-export default function StudyLessonPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+import { use, useEffect, useState } from "react"
+import Link from "next/link"
+import { Layout } from "@/components/layout"
+import { ArrowLeft } from "lucide-react"
+import { LessonModel } from "@/models/lesson_model"
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    // TODO: Gọi API nộp kết quả bài học
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-      toast({ title: 'Nộp bài thành công!' });
-    }, 1000);
-  };
+import LessonQuestionPage from "./question"
+import LessonFlashcardPage from "../flashcard"
+import { lessonLearnService } from "@/services/lesson_learn_service"
+
+export default function LessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const [lesson, setLesson] = useState<LessonModel | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const { id } = use(params);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const lesson = await lessonLearnService.getLesson(id);
+        setLesson(lesson)
+      } catch (error) {
+        // console.error("Error fetching lesson data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [id])
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-6 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Học bài</h1>
-      {/* TODO: Hiển thị quiz/flashcard/question tương ứng */}
-      {/* <QuestionLesson ... /> */}
-      {/* <FlashcardLesson ... /> */}
-      {/* <InteractiveQuiz ... /> */}
-      <Button onClick={handleSubmit} disabled={loading || submitted} className="mt-6">
-        {loading ? 'Đang nộp bài...' : submitted ? 'Đã nộp bài' : 'Nộp bài'}
-      </Button>
-    </div>
-  );
-} 
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          {lesson && (
+            <Link href={`/chapters/${lesson.chapterId}`} className="flex items-center text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              <span>Quay lại danh sách bài học</span>
+            </Link>
+          )}
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            <div className="h-10 bg-gray-200 rounded w-1/4 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+          </div>
+        ) : lesson ? (
+          <>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h1 className="text-3xl font-bold">{lesson.title}</h1>
+                <p className="text-muted-foreground mt-2">{lesson.description}</p>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              {lesson.learningType === "flashcard" ? <LessonFlashcardPage lesson={lesson} /> : <LessonQuestionPage lesson={lesson} />}
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-12 bg-muted rounded-lg">
+            <p className="text-muted-foreground">Không tìm thấy thông tin bài học.</p>
+          </div>
+        )}
+      </div>
+    </Layout>
+  )
+}

@@ -4,9 +4,10 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { Layout } from "@/components/layout";
 import { ArrowLeft, Star } from "lucide-react";
-import { lessonLearnService } from "@/services/lesson_learn_service";
+import { lessonViewService } from "@/services/lesson_view_service";
 import { LessonModel } from "@/models/lesson_model";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 
 export default function LessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [lesson, setLesson] = useState<LessonModel | null>(null);
@@ -17,7 +18,7 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
   useEffect(() => {
     async function fetchData() {
       try {
-        const lesson = await lessonLearnService.getLesson(id);
+        const lesson = await lessonViewService.getLesson(id);
         setLesson(lesson);
       } catch (error) {
         // console.error("Error fetching lesson data:", error);
@@ -27,6 +28,16 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
     }
     fetchData();
   }, [id]);
+
+  async function handleRating(star: number) {
+    try {
+      await lessonViewService.rateLesson(id, star)
+      setRating(star);
+    } catch {
+      toast({title: "Có lỗi xảy ra"})
+    }
+    
+  }
 
   return (
     <Layout>
@@ -91,7 +102,7 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
                     <Star
                       key={star}
                       className={`h-6 w-6 cursor-pointer transition-colors ${star <= rating ? "text-yellow-500" : "text-muted"}`}
-                      onClick={() => setRating(star)}
+                      onClick={() => handleRating(star)}
                       fill={star <= rating ? "currentColor" : "none"}
                       strokeWidth={1.5}
                     />
