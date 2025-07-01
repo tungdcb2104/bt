@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { BookOpen } from "lucide-react"
 import { classViewService } from "@/services/class_view_service"
 import { ClassModel } from "@/models/class_model"
+import { toast } from '@/components/ui/use-toast'
 
 export default function ClassesPage() {
   const [classes, setClasses] = useState<ClassModel[]>([])
@@ -42,6 +43,18 @@ export default function ClassesPage() {
     }
     fetchClasses()
   }, [])
+
+  const handlePin = (id: number) => {
+    setClasses(prev => prev.map(c => c.id === id ? { ...c, pinned: true } : c))
+    toast({ title: 'Đã ghim lớp học!' })
+    // TODO: Gọi API pin lớp học
+  }
+
+  const handleUnpin = (id: number) => {
+    setClasses(prev => prev.map(c => c.id === id ? { ...c, pinned: false } : c))
+    toast({ title: 'Đã bỏ ghim lớp học!' })
+    // TODO: Gọi API bỏ pin lớp học
+  }
 
   if (error) {
     return (
