@@ -7,4 +7,5 @@ export type ChapterModel = {
     description: string;
     image?: File | string | null;
     listLesson?: LessonModel[];
+    authorId: number;
 }
