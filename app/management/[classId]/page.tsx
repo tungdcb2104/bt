@@ -55,7 +55,8 @@ export default function ManageChaptersPage({
         const classes = await chapterManagementService.getAllClassIdAndName();
         setAllClasses(classes);
         const session = await userService.getSession();
-        setUserId(session?.user?.id || session?.user?.sub || null);
+        // console.log(session?.user)
+        // setUserId(session?.user?.id || session?.user?.sub || null);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -257,16 +258,16 @@ export default function ManageChaptersPage({
       </p>
       <p className="text-sm text-gray-500 mb-4">{classInfo?.description}</p>
 
-      {userId && classInfo && userId === classInfo.authorId && (
-        <Dialog open={isCreateModalOpen} onOpenChange={setCreateModalOpen}>
-          <DialogTrigger asChild>
-            <Button>Create New Chapter</Button>
-          </DialogTrigger>
-          <DialogContent>
-            {renderChapterForm(handleCreate, "Create New Chapter")}
-          </DialogContent>
-        </Dialog>
-      )}
+      
+      <Dialog open={isCreateModalOpen} onOpenChange={setCreateModalOpen}>
+        <DialogTrigger asChild>
+          <Button>Create New Chapter</Button>
+        </DialogTrigger>
+        <DialogContent>
+          {renderChapterForm(handleCreate, "Create New Chapter")}
+        </DialogContent>
+      </Dialog>
+      
 
       <Dialog open={isEditModalOpen} onOpenChange={setEditModalOpen}>
         <DialogContent>
