@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,9 +14,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { chapterManagementService } from "@/services/chapter_management_service";
 import { ChapterModel } from "@/models/chapter_model";
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft, X, Pin } from "lucide-react";
 import Link from "next/link";
 import { ClassModel } from "@/models/class_model";
+import { userService } from '@/services/user_service';
 
 export default function ManageChaptersPage({
   params,
@@ -40,6 +41,8 @@ export default function ManageChaptersPage({
   );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { classId } = use(params);
+  const [userId, setUserId] = useState<string | number | null>(null);
+  const [pinnedChapters, setPinnedChapters] = useState<number[]>([]);
 
   useEffect(() => {
     setNewChapterClazzId(classId);
@@ -51,6 +54,8 @@ export default function ManageChaptersPage({
 
         const classes = await chapterManagementService.getAllClassIdAndName();
         setAllClasses(classes);
+        const session = await userService.getSession();
+        setUserId(session?.user?.id || session?.user?.sub || null);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -103,7 +108,7 @@ export default function ManageChaptersPage({
     if (window.confirm("Are you sure you want to delete this chapter?")) {
       try {
         await chapterManagementService.deleteChapter(id.toString());
-        setChapters(chapters.filter((c) => c.id !== id));
+        setChapters(chapters.filter((c: ChapterModel) => c.id !== id));
       } catch (error) {
         console.error("Failed to delete chapter:", error);
       }
@@ -143,7 +148,7 @@ export default function ManageChaptersPage({
           <Input
             id="name"
             value={newChapterName}
-            onChange={(e) => setNewChapterName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewChapterName(e.target.value)}
             className="col-span-3"
           />
         </div>
@@ -154,7 +159,7 @@ export default function ManageChaptersPage({
           <Input
             id="description"
             value={newChapterDescription}
-            onChange={(e) => setNewChapterDescription(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewChapterDescription(e.target.value)}
             className="col-span-3"
           />
         </div>
@@ -165,7 +170,7 @@ export default function ManageChaptersPage({
           <select
             id="clazzId"
             value={newChapterClazzId}
-            onChange={(e) => setNewChapterClazzId(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewChapterClazzId(e.target.value)}
             className="col-span-3 border rounded px-3 py-2"
           >
             <option value="">-- Select Class --</option>
@@ -186,7 +191,7 @@ export default function ManageChaptersPage({
               type="file"
               accept="image/*"
               ref={fileInputRef}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 if (e.target.files && e.target.files[0]) {
                   setNewChapterImage(e.target.files[0]);
                 }
@@ -229,6 +234,12 @@ export default function ManageChaptersPage({
     </>
   );
 
+  const handleTogglePin = (id: number) => {
+    setPinnedChapters((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
+    );
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -246,14 +257,16 @@ export default function ManageChaptersPage({
       </p>
       <p className="text-sm text-gray-500 mb-4">{classInfo?.description}</p>
 
-      <Dialog open={isCreateModalOpen} onOpenChange={setCreateModalOpen}>
-        <DialogTrigger asChild>
-          <Button>Create New Chapter</Button>
-        </DialogTrigger>
-        <DialogContent>
-          {renderChapterForm(handleCreate, "Create New Chapter")}
-        </DialogContent>
-      </Dialog>
+      {userId && classInfo && userId === classInfo.authorId && (
+        <Dialog open={isCreateModalOpen} onOpenChange={setCreateModalOpen}>
+          <DialogTrigger asChild>
+            <Button>Create New Chapter</Button>
+          </DialogTrigger>
+          <DialogContent>
+            {renderChapterForm(handleCreate, "Create New Chapter")}
+          </DialogContent>
+        </Dialog>
+      )}
 
       <Dialog open={isEditModalOpen} onOpenChange={setEditModalOpen}>
         <DialogContent>
@@ -264,7 +277,7 @@ export default function ManageChaptersPage({
       <div className="mt-4">
         {chapters
           .sort((a, b) => a.id - b.id)
-          .map((chapter) => (
+          .map((chapter: ChapterModel) => (
             <div key={chapter.id}>
               <div
                 key={chapter.id}
@@ -297,22 +310,31 @@ export default function ManageChaptersPage({
                     Class ID: {chapter.clazzId}
                   </p>
                 </Link>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openEditModal(chapter)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(chapter.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
+                <button
+                  className={`p-1 rounded-full transition-colors ml-2 ${pinnedChapters.includes(chapter.id) ? 'bg-yellow-200 text-yellow-600' : 'bg-gray-100 text-gray-400 hover:bg-yellow-100 hover:text-yellow-600'}`}
+                  title={pinnedChapters.includes(chapter.id) ? 'Bỏ ghim' : 'Ghim chương'}
+                  onClick={() => handleTogglePin(chapter.id)}
+                >
+                  <Pin size={18} fill={pinnedChapters.includes(chapter.id) ? '#facc15' : 'none'} />
+                </button>
+                {userId && classInfo && userId === classInfo.authorId && (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openEditModal(chapter)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(chapter.id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

@@ -7,4 +7,5 @@ export type ClassModel = {
     image?: string;
     categories?: string[];
     listChapter?: ChapterModel[];
+    authorId: number;
 }
