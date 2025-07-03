@@ -50,17 +50,32 @@ export default function LessonFlashcardPage({
       </div>
 
       <div
-        className="bg-white border rounded-lg p-8 min-h-[300px] flex items-center justify-center text-center cursor-pointer shadow-md transition-transform duration-500"
+        className="relative bg-white border rounded-lg min-h-[300px] flex items-center justify-center text-center cursor-pointer shadow-md transition-transform duration-500"
         onClick={() => setIsFlipped(!isFlipped)}
-        style={{ transform: isFlipped ? "rotateY(180deg)" : "rotateY(0)" }}
+        style={{ perspective: '1000px' }}
       >
-        {!isFlipped ? (
-          <div className="text-xl font-medium">{flashcard.frontContent}</div>
-        ) : (
-          <div className="text-xl transform rotate-180">
+        <div
+          className={
+            `absolute w-full h-full transition-transform duration-500` +
+            (isFlipped ? ' rotate-y-180' : '')
+          }
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          {/* Front */}
+          <div
+            className="absolute w-full h-full flex items-center justify-center text-xl font-medium backface-hidden"
+            style={{ backfaceVisibility: 'hidden' }}
+          >
+            {flashcard.frontContent}
+          </div>
+          {/* Back */}
+          <div
+            className="absolute w-full h-full flex items-center justify-center text-xl font-medium backface-hidden bg-gray-50"
+            style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
+          >
             {flashcard.backContent}
           </div>
-        )}
+        </div>
       </div>
 
       <div className="flex justify-between mt-6">
