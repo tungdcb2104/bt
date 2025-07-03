@@ -1,7 +1,7 @@
 import { LessonModel } from "@/models/lesson_model";
 import { lessonRepository, LessonRepository } from "@/repositories/lesson_repository";
 
-class LessonLearnService {
+class LessonViewService {
     private lessonRepository: LessonRepository;
 
     constructor(lessonRepository: LessonRepository) {
@@ -16,6 +16,15 @@ class LessonLearnService {
             throw error;
         }
     }
+
+
+    async rateLesson(lessonId: string, rating: number) {
+        try {
+            return await this.lessonRepository.voteLesson({lessonId: Number.parseInt(lessonId), rate: rating})
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
-export const lessonLearnService: LessonLearnService = new LessonLearnService(lessonRepository);
+export const lessonViewService: LessonViewService = new LessonViewService(lessonRepository);

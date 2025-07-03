@@ -1,7 +1,8 @@
 import { LessonModel } from "@/models/lesson_model";
+import { LessonRequestModel } from "@/models/lesson_request_model";
 import { lessonRepository, LessonRepository } from "@/repositories/lesson_repository";
 
-class LessonLearnService {
+class EditLessonService {
     private lessonRepository: LessonRepository;
 
     constructor(lessonRepository: LessonRepository) {
@@ -16,6 +17,21 @@ class LessonLearnService {
             throw error;
         }
     }
+
+    async updateLesson(
+        id: string,
+        lessonData: LessonRequestModel
+      ): Promise<LessonModel> {
+        try {
+          const updatedLesson = await this.lessonRepository.updateLesson(
+            id,
+            lessonData
+          );
+          return updatedLesson;
+        } catch (error) {
+          throw error;
+        }
+    }
 }
 
-export const lessonLearnService: LessonLearnService = new LessonLearnService(lessonRepository);
+export const editLessonService: EditLessonService = new EditLessonService(lessonRepository);

@@ -6,7 +6,7 @@ import { Layout } from "@/components/layout"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BookOpen, PlusCircle } from "lucide-react"
-import { lessonLearnService } from "@/services/lesson_learn_service"
+import { lessonViewService } from "@/services/lesson_view_service"
 import { LessonModel } from "@/models/lesson_model"
 
 export default function LessonsPage() {
@@ -17,7 +17,6 @@ export default function LessonsPage() {
   useLayoutEffect(() => {
     async function fetchLessons() {
       try {
-        const lessons = await lessonLearnService.getAllLessons()
         setLessons(lessons)
       } catch (error: Error | any) {
         setError(error.message || "Đã xảy ra lỗi khi tải dữ liệu bài học.")
@@ -76,7 +75,7 @@ export default function LessonsPage() {
             {lessons.map((lesson) => (
               <Card key={lesson.id}>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-xl">{lesson.name}</CardTitle>
+                  <CardTitle className="text-xl">{lesson.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-2">
                   <p className="text-sm text-muted-foreground line-clamp-2">

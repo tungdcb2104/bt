@@ -2,42 +2,42 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { FlashCardModel } from "@/models/learning_model";
 
-export default function CreateFlashcardForm(props : {lessonId: number, onFlashcardCreated?: () => void}) {
-  const [front, setFront] = useState("");
-  const [back, setBack] = useState("");
+export default function CreateFlashcardForm({ onFlashcardCreated }: { onFlashcardCreated: (data: FlashCardModel) => void }) {
+  const [frontContent, setFrontContent] = useState("");
+  const [backContent, setBackContent] = useState("");
+  const [frontImage, setFrontImage] = useState("");
+  const [backImage, setBackImage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Xử lý lưu flashcard
-    alert(`Đã tạo flashcard: ${front} - ${back}`);
-    setFront("");
-    setBack("");
+    onFlashcardCreated({
+      frontContent, backContent, frontImage, backImage,
+      type: "flashcard"
+    });
+    setFrontContent(""); setBackContent(""); setFrontImage(""); setBackImage("");
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       <div>
-        <Label htmlFor="front">Mặt trước</Label>
-        <Input
-          id="front"
-          value={front}
-          onChange={e => setFront(e.target.value)}
-          placeholder="Nhập mặt trước"
-          required
-        />
+        <Label>Mặt trước</Label>
+        <Input value={frontContent} onChange={e => setFrontContent(e.target.value)} required />
       </div>
       <div>
-        <Label htmlFor="back">Mặt sau</Label>
-        <Input
-          id="back"
-          value={back}
-          onChange={e => setBack(e.target.value)}
-          placeholder="Nhập mặt sau"
-          required
-        />
+        <Label>Mặt sau</Label>
+        <Input value={backContent} onChange={e => setBackContent(e.target.value)} required />
+      </div>
+      <div>
+        <Label>Ảnh mặt trước (link URL)</Label>
+        <Input value={frontImage} onChange={e => setFrontImage(e.target.value)} />
+      </div>
+      <div>
+        <Label>Ảnh mặt sau (link URL)</Label>
+        <Input value={backImage} onChange={e => setBackImage(e.target.value)} />
       </div>
       <Button type="submit">Tạo flashcard</Button>
     </form>
   );
-} 
+}

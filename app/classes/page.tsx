@@ -19,7 +19,7 @@ export default function ClassesPage() {
   const [classes, setClasses] = useState<ClassModel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter()
+  const router = useRouter();
 
   useLayoutEffect(() => {
     async function fetchClasses() {
@@ -78,12 +78,15 @@ export default function ClassesPage() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Lớp học</h1>
           <div className="flex gap-2">
+            <Button
+              variant={"secondary"}
+              onClick={() => router.push("/classes/pinned")}
+            >
+              Lớp đã ghim
+            </Button>
             <Button onClick={() => router.push("/classes/create")}>
-            + Tạo lớp mới
-          </Button>
-          <Button variant={"secondary"} onClick={() => router.push("/classes/pinned")}>
-            Lớp đã ghim
-          </Button>
+              + Tạo lớp mới
+            </Button>
           </div>
         </div>
 
