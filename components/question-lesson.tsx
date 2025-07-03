@@ -262,6 +262,33 @@ export function QuestionLesson({ title, description, questions }: QuestionLesson
       <h1 className="text-2xl font-bold mb-2">{title}</h1>
       <p className="text-muted-foreground mb-6">{description}</p>
 
+      {/* Navigation grid */}
+      <div className="mb-4 flex flex-wrap gap-2 justify-center">
+        {questions.map((q, idx) => {
+          const isCurrent = idx === currentIndex;
+          const isAnswered = answers[idx] !== undefined;
+          return (
+            <button
+              key={q.id || idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={cn(
+                "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
+                isCurrent
+                  ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                  : isAnswered
+                    ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
+                    : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
+                "focus:outline-none focus:ring-2 focus:ring-blue-400"
+              )}
+              aria-label={`Câu ${idx + 1}`}
+              type="button"
+            >
+              {idx + 1}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-muted-foreground">

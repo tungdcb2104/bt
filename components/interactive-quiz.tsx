@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { Check, X, HelpCircle, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -107,6 +107,32 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   return (
     <Card className="w-full">
       <CardHeader>
+        {/* Navigation grid */}
+        <div className="mb-4 flex flex-wrap gap-2 justify-center">
+          {questions.map((q, idx) => {
+            const isCurrent = idx === currentQuestion;
+            const isAnswered = answers[idx] !== undefined;
+            return (
+              <button
+                key={q.id}
+                onClick={() => setCurrentQuestion(idx)}
+                className={cn(
+                  "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
+                  isCurrent
+                    ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                    : isAnswered
+                      ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
+                      : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-400"
+                )}
+                aria-label={`Câu ${idx + 1}`}
+                type="button"
+              >
+                {idx + 1}
+              </button>
+            );
+          })}
+        </div>
         <div className="flex justify-between items-center">
           <CardTitle>
             Câu hỏi {currentQuestion + 1}/{questions.length}
