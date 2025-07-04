@@ -55,17 +55,17 @@ export default function LessonFlashcardPage({
         onClick={() => setIsFlipped(!isFlipped)}
         style={{ perspective: '1000px' }}
       >
-        <div className="relative w-full h-full transform-style-3d transition-transform duration-500" style={{ transform: isFlipped ? 'rotateY(180deg)' : 'none' }}>
+        <div className="absolute w-full h-full transition-transform duration-500 transform-style-3d" style={{ transform: isFlipped ? 'rotateY(180deg)' : 'none', willChange: 'transform' }}>
           {/* Front */}
           <div
-            className={`absolute w-full h-full backface-hidden flex items-center justify-center text-xl font-medium bg-white p-6 ${!isFlipped ? 'visible' : 'invisible'}`}
+            className="absolute inset-0 flex items-center justify-center text-xl font-medium bg-white p-6 backface-hidden z-10"
             style={{ backfaceVisibility: 'hidden' }}
           >
             {flashcard.frontContent}
           </div>
           {/* Back */}
           <div
-            className={`absolute w-full h-full backface-hidden flex items-center justify-center text-xl font-medium bg-gray-50 p-6 ${isFlipped ? 'visible' : 'invisible'}`}
+            className="absolute inset-0 flex items-center justify-center text-xl font-medium bg-gray-50 p-6 backface-hidden z-0"
             style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
           >
             {flashcard.backContent || (flashcard as any).back || (flashcard as any).answer || "Không có nội dung mặt sau"}
