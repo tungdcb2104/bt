@@ -40,6 +40,7 @@ export default function LessonFlashcardPage({
   }
 
   const flashcard = lesson.listLearning[currentFlashcardIndex] as FlashcardItem;
+  console.log('Flashcard data:', flashcard);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -54,20 +55,20 @@ export default function LessonFlashcardPage({
         onClick={() => setIsFlipped(!isFlipped)}
         style={{ perspective: '1000px' }}
       >
-        <div className="w-full h-full transition-transform duration-500" style={{ transformStyle: 'preserve-3d', transform: isFlipped ? 'rotateY(180deg)' : 'none' }}>
+        <div className="relative w-full h-full transform-style-3d transition-transform duration-500" style={{ transform: isFlipped ? 'rotateY(180deg)' : 'none' }}>
           {/* Front */}
           <div
-            className="absolute inset-0 flex items-center justify-center text-xl font-medium bg-white p-6 backface-hidden"
+            className={`absolute w-full h-full backface-hidden flex items-center justify-center text-xl font-medium bg-white p-6 ${!isFlipped ? 'visible' : 'invisible'}`}
             style={{ backfaceVisibility: 'hidden' }}
           >
             {flashcard.frontContent}
           </div>
           {/* Back */}
           <div
-            className="absolute inset-0 flex items-center justify-center text-xl font-medium bg-gray-50 p-6 backface-hidden"
+            className={`absolute w-full h-full backface-hidden flex items-center justify-center text-xl font-medium bg-gray-50 p-6 ${isFlipped ? 'visible' : 'invisible'}`}
             style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
           >
-            {flashcard.backContent}
+            {flashcard.backContent || (flashcard as any).back || (flashcard as any).answer || "Không có nội dung mặt sau"}
           </div>
         </div>
       </div>
