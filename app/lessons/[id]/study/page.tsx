@@ -87,31 +87,6 @@ function QuestionStudyWithNavigation({ lesson }: { lesson: LessonModel }) {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap gap-2 justify-center">
-        {lesson.listLearning.map((q, idx) => {
-          const isCurrent = idx === currentQuestionIndex;
-          const isAnswered = userAnswers[q.id] !== undefined;
-          return (
-            <button
-              key={q.id || idx}
-              onClick={() => setCurrentQuestionIndex(idx)}
-              className={[
-                "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
-                isCurrent
-                  ? "bg-blue-600 text-white border-blue-600 shadow-lg"
-                  : isAnswered
-                  ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
-                  : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
-                "focus:outline-none focus:ring-2 focus:ring-blue-400"
-              ].join(" ")}
-              aria-label={`Câu ${idx + 1}`}
-              type="button"
-            >
-              {idx + 1}
-            </button>
-          );
-        })}
-      </div>
       <LessonQuestionPage
         lesson={lesson}
         currentQuestionIndex={currentQuestionIndex}
