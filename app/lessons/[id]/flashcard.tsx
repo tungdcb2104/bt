@@ -55,10 +55,7 @@ export default function LessonFlashcardPage({
         style={{ perspective: '1000px' }}
       >
         <div
-          className={
-            `absolute w-full h-full transition-transform duration-500` +
-            (isFlipped ? ' rotate-y-180' : '')
-          }
+          className={`absolute w-full h-full transition-transform duration-500${isFlipped ? ' rotate-y-180' : ''}`}
           style={{ transformStyle: 'preserve-3d' }}
         >
           {/* Front */}

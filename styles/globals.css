@@ -92,3 +92,11 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Hiệu ứng lật 3D cho flashcard */
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
