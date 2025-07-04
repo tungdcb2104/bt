@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { ChevronLeft, ChevronRight, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,8 +18,20 @@ interface QuestionLessonProps {
   questions: QuestionItem[]
 }
 
+// Custom hook cho navigation quiz/question
+function useQuizNavigation(total: number) {
+  const [current, setCurrent] = useState(0);
+  const goTo = (idx: number) => {
+    if (idx >= 0 && idx < total) setCurrent(idx);
+  };
+  const next = () => goTo(current + 1);
+  const prev = () => goTo(current - 1);
+  return { current, goTo, next, prev, setCurrent };
+}
+
 export function QuestionLesson({ title, description, questions }: QuestionLessonProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const nav = useQuizNavigation(questions.length);
+  const currentIndex = nav.current;
   const [answers, setAnswers] = useState<Record<number, any>>({})
   const [showExplanation, setShowExplanation] = useState(false)
   const [score, setScore] = useState(0)
@@ -30,7 +42,7 @@ export function QuestionLesson({ title, description, questions }: QuestionLesson
 
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1)
+      nav.next()
       setShowExplanation(false)
     } else {
       setCompleted(true)
@@ -39,7 +51,7 @@ export function QuestionLesson({ title, description, questions }: QuestionLesson
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1)
+      nav.prev()
       setShowExplanation(false)
     }
   }
@@ -71,7 +83,7 @@ export function QuestionLesson({ title, description, questions }: QuestionLesson
   }
 
   const handleRestart = () => {
-    setCurrentIndex(0)
+    nav.setCurrent(0)
     setAnswers({})
     setShowExplanation(false)
     setScore(0)
@@ -270,16 +282,16 @@ export function QuestionLesson({ title, description, questions }: QuestionLesson
           return (
             <button
               key={q.id || idx}
-              onClick={() => setCurrentIndex(idx)}
-              className={cn(
+              onClick={() => nav.goTo(idx)}
+              className={[
                 "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
                 isCurrent
                   ? "bg-blue-600 text-white border-blue-600 shadow-lg"
                   : isAnswered
-                    ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
-                    : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
+                  ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
+                  : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
                 "focus:outline-none focus:ring-2 focus:ring-blue-400"
-              )}
+              ].join(" ")}
               aria-label={`Câu ${idx + 1}`}
               type="button"
             >

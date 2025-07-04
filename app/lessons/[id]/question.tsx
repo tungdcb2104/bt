@@ -6,30 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { LessonModel } from "@/models/lesson_model";
 import { Question } from "@/types/lesson";
+import React from "react";
+
+// Custom hook cho navigation quiz/question
+function useQuizNavigation(total: number) {
+  const [current, setCurrent] = useState(0);
+  const goTo = (idx: number) => {
+    if (idx >= 0 && idx < total) setCurrent(idx);
+  };
+  const next = () => goTo(current + 1);
+  const prev = () => goTo(current - 1);
+  return { current, goTo, next, prev, setCurrent };
+}
 
 export default function LessonQuestionPage({lesson}: {lesson: LessonModel | null}) {
   // State cho câu hỏi
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const nav = useQuizNavigation(lesson.listLearning.length);
+  const currentQuestionIndex = nav.current;
   const [userAnswers, setUserAnswers] = useState<{
     [key: number]: string | string[] | number;
   }>({});
   const [showResult, setShowResult] = useState(false);
-
-  // Xử lý chuyển câu hỏi
-  const handleNextQuestion = useCallback(() => {
-    if (
-      lesson?.listLearning &&
-      currentQuestionIndex < lesson.listLearning.length - 1
-    ) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
-  }, [lesson, currentQuestionIndex]);
-
-  const handlePrevQuestion = useCallback(() => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-  }, [currentQuestionIndex]);
 
   // Xử lý trả lời câu hỏi
   const handleAnswer = useCallback(
@@ -90,8 +87,8 @@ export default function LessonQuestionPage({lesson}: {lesson: LessonModel | null
   const handleRetry = useCallback(() => {
     setUserAnswers({});
     setShowResult(false);
-    setCurrentQuestionIndex(0);
-  }, []);
+    nav.setCurrent(0);
+  }, [nav]);
 
   // Render câu hỏi
   if (!lesson?.listLearning || lesson.listLearning.length === 0) {
@@ -110,18 +107,16 @@ export default function LessonQuestionPage({lesson}: {lesson: LessonModel | null
           return (
             <button
               key={q.id || idx}
-              onClick={() => setCurrentQuestionIndex(idx)}
-              className={
-                [
-                  "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
-                  isCurrent
-                    ? "bg-blue-600 text-white border-blue-600 shadow-lg"
-                    : isAnswered
-                      ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
-                      : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-400"
-                ].join(' ')
-              }
+              onClick={() => nav.goTo(idx)}
+              className={[
+                "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
+                isCurrent
+                  ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                  : isAnswered
+                  ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
+                  : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
+                "focus:outline-none focus:ring-2 focus:ring-blue-400"
+              ].join(" ")}
               aria-label={`Câu ${idx + 1}`}
               type="button"
             >
@@ -287,7 +282,7 @@ export default function LessonQuestionPage({lesson}: {lesson: LessonModel | null
       <div className="flex justify-between">
         <Button
           variant="outline"
-          onClick={handlePrevQuestion}
+          onClick={nav.prev}
           disabled={currentQuestionIndex === 0}
         >
           <ChevronLeft className="mr-2 h-4 w-4" />
@@ -299,7 +294,7 @@ export default function LessonQuestionPage({lesson}: {lesson: LessonModel | null
             {showResult ? "Làm lại" : "Nộp bài"}
           </Button>
         ) : (
-          <Button variant="outline" onClick={handleNextQuestion}>
+          <Button variant="outline" onClick={nav.next}>
             Câu tiếp
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>

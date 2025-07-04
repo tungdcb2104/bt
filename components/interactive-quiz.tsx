@@ -21,8 +21,21 @@ interface InteractiveQuizProps {
   onComplete?: (score: number, total: number) => void
 }
 
+// Custom hook cho navigation quiz/question
+function useQuizNavigation(total: number) {
+  const [current, setCurrent] = useState(0);
+  const goTo = (idx: number) => {
+    if (idx >= 0 && idx < total) setCurrent(idx);
+  };
+  const next = () => goTo(current + 1);
+  const prev = () => goTo(current - 1);
+  return { current, goTo, next, prev, setCurrent };
+}
+
 export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps) {
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+  // Thay thế currentQuestion bằng hook navigation
+  const nav = useQuizNavigation(questions.length);
+  const currentQuestion = nav.current;
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [showExplanation, setShowExplanation] = useState(false)
   const [score, setScore] = useState(0)
@@ -51,7 +64,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
     setShowExplanation(false)
 
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+      nav.next()
     } else {
       setCompleted(true)
       if (onComplete) {
@@ -61,7 +74,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
   }
 
   const handleRestart = () => {
-    setCurrentQuestion(0)
+    nav.setCurrent(0)
     setSelectedOption(null)
     setShowExplanation(false)
     setScore(0)
@@ -115,7 +128,7 @@ export function InteractiveQuiz({ questions, onComplete }: InteractiveQuizProps)
             return (
               <button
                 key={q.id}
-                onClick={() => setCurrentQuestion(idx)}
+                onClick={() => nav.goTo(idx)}
                 className={cn(
                   "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
                   isCurrent
