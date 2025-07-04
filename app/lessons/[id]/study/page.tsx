@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import { Layout } from "@/components/layout"
 import { ArrowLeft } from "lucide-react"
@@ -59,7 +59,11 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
             </div>
 
             <div className="mt-8">
-              {lesson.learningType === "flashcard" ? <LessonFlashcardPage lesson={lesson} /> : <LessonQuestionPage lesson={lesson} />}
+              {lesson.learningType === "flashcard" ? (
+                <LessonFlashcardPage lesson={lesson} />
+              ) : (
+                <QuestionStudyWithNavigation lesson={lesson} />
+              )}
             </div>
           </>
         ) : (
@@ -70,4 +74,53 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
       </div>
     </Layout>
   )
+}
+
+function QuestionStudyWithNavigation({ lesson }: { lesson: LessonModel }) {
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<{ [key: number]: string | string[] | number }>({});
+  const [showResult, setShowResult] = useState(false);
+
+  if (!lesson?.listLearning || lesson.listLearning.length === 0) {
+    return <div className="text-center py-12">Không có câu hỏi nào.</div>;
+  }
+
+  return (
+    <div>
+      <div className="mb-4 flex flex-wrap gap-2 justify-center">
+        {lesson.listLearning.map((q, idx) => {
+          const isCurrent = idx === currentQuestionIndex;
+          const isAnswered = userAnswers[q.id] !== undefined;
+          return (
+            <button
+              key={q.id || idx}
+              onClick={() => setCurrentQuestionIndex(idx)}
+              className={[
+                "w-9 h-9 rounded-full border flex items-center justify-center font-semibold transition-colors",
+                isCurrent
+                  ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                  : isAnswered
+                  ? "bg-green-100 text-green-700 border-green-400 hover:bg-green-200"
+                  : "bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200",
+                "focus:outline-none focus:ring-2 focus:ring-blue-400"
+              ].join(" ")}
+              aria-label={`Câu ${idx + 1}`}
+              type="button"
+            >
+              {idx + 1}
+            </button>
+          );
+        })}
+      </div>
+      <LessonQuestionPage
+        lesson={lesson}
+        currentQuestionIndex={currentQuestionIndex}
+        setCurrentQuestionIndex={setCurrentQuestionIndex}
+        userAnswers={userAnswers}
+        setUserAnswers={setUserAnswers}
+        showResult={showResult}
+        setShowResult={setShowResult}
+      />
+    </div>
+  );
 }
