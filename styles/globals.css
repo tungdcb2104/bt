@@ -103,3 +103,40 @@ body {
 .transform-style-3d {
   transform-style: preserve-3d;
 }
+
+/* Hiệu ứng lật 3D tối thượng cho flashcard */
+.flashcard-3d-container {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  perspective: 1000px;
+}
+.flashcard-3d-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+}
+.flashcard-3d-inner.flipped {
+  transform: rotateY(180deg);
+}
+.flashcard-3d-front,
+.flashcard-3d-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  padding: 1.5rem;
+}
+.flashcard-3d-front {
+  background: #fff;
+}
+.flashcard-3d-back {
+  background: #f8fafc;
+  transform: rotateY(180deg);
+}
