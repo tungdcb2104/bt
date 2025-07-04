@@ -69,6 +69,11 @@ export default function LessonDetailPage({ params }: { params: Promise<{ id: str
                 <Link href={`/lessons/${id}/study`}>
                   <Button>Học bài</Button>
                 </Link>
+                {lesson.learningType === "question" && (
+                  <Link href={`/lessons/${id}/question`}>
+                    <Button variant="default">Làm bài trắc nghiệm</Button>
+                  </Link>
+                )}
               </div>
             </div>
 

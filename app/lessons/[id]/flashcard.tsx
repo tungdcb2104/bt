@@ -41,6 +41,7 @@ export default function LessonFlashcardPage({
   }
 
   const flashcard = lesson.listLearning[currentFlashcardIndex] as FlashCardModel;
+  console.log('Flashcard data:', flashcard);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -68,7 +69,7 @@ export default function LessonFlashcardPage({
             className={`absolute w-full h-full backface-hidden flex items-center justify-center text-xl font-medium bg-gray-50 p-6 ${isFlipped ? 'visible' : 'invisible'}`}
             style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
           >
-            {flashcard.backContent || (flashcard as any).back || ""}
+            {flashcard.backContent || (flashcard as any).back || (flashcard as any).answer || "Không có nội dung mặt sau"}
           </div>
         </div>
       </div>
