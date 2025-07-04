@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {  ChevronLeft, ChevronRight } from "lucide-react";
 import type { FlashcardItem } from "@/types/lesson";
 import { LessonModel } from "@/models/lesson_model";
+import type { FlashCardModel } from "@/models/learning_model";
 
 export default function LessonFlashcardPage({
   lesson,
@@ -39,7 +40,7 @@ export default function LessonFlashcardPage({
     return <div className="text-center py-12">Không có thẻ ghi nhớ nào.</div>;
   }
 
-  const flashcard = lesson.listLearning[currentFlashcardIndex] as FlashcardItem;
+  const flashcard = lesson.listLearning[currentFlashcardIndex] as FlashCardModel;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -67,7 +68,7 @@ export default function LessonFlashcardPage({
             className={`absolute w-full h-full backface-hidden flex items-center justify-center text-xl font-medium bg-gray-50 p-6 ${isFlipped ? 'visible' : 'invisible'}`}
             style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
           >
-            {flashcard.backContent}
+            {flashcard.backContent || (flashcard as any).back || ""}
           </div>
         </div>
       </div>
