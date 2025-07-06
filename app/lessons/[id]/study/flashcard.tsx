@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {  ChevronLeft, ChevronRight } from "lucide-react";
 import type { FlashcardItem } from "@/types/lesson";
 import { LessonModel } from "@/models/lesson_model";
+
+import "./flashcard.css";
 
 export default function LessonFlashcardPage({
   lesson,
@@ -54,13 +56,17 @@ export default function LessonFlashcardPage({
         className="flashcard cursor-pointer"
         onClick={() => setAngle((angle) => angle + 180)}
       >
-        <div className="flashcard-inner" data-flipped={angle} style={{
-          transform: `rotateY(${angle}deg)`
-        }}>
+        <div className="flashcard-inner" style={{transform: `rotateY(${angle}deg)`}}>
           <div className="flashcard-front">
-            {flashcard.frontContent}
+            <div className="image-container">
+              {flashcard.frontImage && <img src={flashcard.frontImage} />}
+            </div>
+            <p>{flashcard.frontContent}</p>
           </div>
           <div className="flashcard-back">
+            <div className="image-container">
+              {flashcard.backImage && <img src={flashcard.backImage} />}
+            </div>
             {flashcard.backContent || (flashcard as any).back || (flashcard as any).answer || "Không có nội dung mặt sau"}
           </div>
         </div>

@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react"
 import { LessonModel } from "@/models/lesson_model"
 
 import LessonQuestionPage from "./question"
-import LessonFlashcardPage from "../flashcard"
+import LessonFlashcardPage from "./flashcard"
 import { lessonLearnService } from "@/services/lesson_learn_service"
 
 export default function LessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
