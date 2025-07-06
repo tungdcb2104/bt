@@ -1,5 +1,6 @@
 import { LessonModel } from "@/models/lesson_model"
 import { LearningRepository } from "./learning_repository";
+import { LessonResultDTO } from "@/models/lesson_result_dto";
 
 export abstract class LessonRepository extends LearningRepository {
   public abstract getLessonById(id: string): Promise<LessonModel>;
@@ -7,6 +8,7 @@ export abstract class LessonRepository extends LearningRepository {
   public abstract updateLesson(id: string, data: LessonModel): Promise<LessonModel>;
   public abstract deleteLesson(id: string): Promise<string>;
   public abstract voteLesson(data: { lessonId: number; rate: number }): Promise<any>;
+  public abstract submitLesson(id: string, data: LessonResultDTO): Promise<any>;
 }
 
 class LessonRepositoryImpl extends LessonRepository {
@@ -28,6 +30,10 @@ class LessonRepositoryImpl extends LessonRepository {
 
   public async voteLesson(data: { lessonId: number; rate: number }): Promise<any> {
     return this.instance.post(`/lesson/vote`, data).then((res) => res.data);
+  }
+
+  public async submitLesson(id: string, data: LessonResultDTO): Promise<any> {
+    return this.instance.post(`/lesson/${id}/submit`, data).then((res) => res.data);
   }
 }
 

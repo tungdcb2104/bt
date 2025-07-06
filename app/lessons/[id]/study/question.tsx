@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { LessonModel } from "@/models/lesson_model";
 import { LearningModel } from "@/models/learning_model";
+import { lessonLearnService } from "@/services/lesson_learn_service";
+import { QuestionResultDTO } from "@/models/learning_result";
 
 export default function LessonQuestionPage({ lesson }: { lesson: LessonModel | null }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -69,7 +71,15 @@ export default function LessonQuestionPage({ lesson }: { lesson: LessonModel | n
     return Math.round((correctCount / lesson.listLearning.length) * 100);
   };
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
+    console.log("TEST")
+    await lessonLearnService.submitLesson(lesson!.id, lesson!.listLearning!.map(
+      (q: LearningModel) => ({
+        id: q.id!,
+        type: "question",
+        correct: checkAnswer(q, userAnswers[q.id!])
+      })
+    ))
     setShowResult(true);
   }, []);
 
