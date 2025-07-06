@@ -13,7 +13,7 @@ export default function LessonFlashcardPage({
 }) {
   // State cho flashcard
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [angle, setAngle] = useState(0);
 
   // Xử lý chuyển flashcard
   const handleNextFlashcard = useCallback(() => {
@@ -22,14 +22,14 @@ export default function LessonFlashcardPage({
       currentFlashcardIndex < lesson.listLearning.length - 1
     ) {
       setCurrentFlashcardIndex(currentFlashcardIndex + 1);
-      setIsFlipped(false);
+      setAngle(0);
     }
   }, [lesson, currentFlashcardIndex]);
 
   const handlePrevFlashcard = useCallback(() => {
     if (currentFlashcardIndex > 0) {
       setCurrentFlashcardIndex(currentFlashcardIndex - 1);
-      setIsFlipped(false);
+      setAngle(0);
     }
   }, [currentFlashcardIndex]);
 
@@ -51,14 +51,16 @@ export default function LessonFlashcardPage({
       </div>
 
       <div
-        className="flashcard-3d-container cursor-pointer"
-        onClick={() => setIsFlipped(!isFlipped)}
+        className="flashcard cursor-pointer"
+        onClick={() => setAngle((angle) => angle + 180)}
       >
-        <div className={`flashcard-3d-inner${isFlipped ? ' flipped' : ''}`}>
-          <div className="flashcard-3d-front">
+        <div className="flashcard-inner" data-flipped={angle} style={{
+          transform: `rotateY(${angle}deg)`
+        }}>
+          <div className="flashcard-front">
             {flashcard.frontContent}
           </div>
-          <div className="flashcard-3d-back">
+          <div className="flashcard-back">
             {flashcard.backContent || (flashcard as any).back || (flashcard as any).answer || "Không có nội dung mặt sau"}
           </div>
         </div>
